@@ -1,21 +1,14 @@
 CC = g++ -std=c++17
-CFLAGS = -O2 -Wall
+CFLAGS = -O2 -Wall -I src/Utilities
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
-SRC_DIR = src/
+SRC_DIR = src
 
-# MODULES := $(wildcard $(SRC_DIR/*/))
-MODULES = Window/
+MODULES := $(wildcard $(SRC_DIR)/*/)
 
 source_files = $(foreach dir,$(MODULES),$(wildcard $(dir)/*.cpp))
-object_files = $(source_files:.cpp=.o) 
-
-libgfxEngine.a:
-	ar rcs $@ $^
+object_files = $(source_files:.cpp=.o)
 
 $(object_files): $(source_files)
-	echo $@ $^
-# @mkdir -l $(dir $@)
-# $(CC) $(CFLAGS) $(LDFLAGS)
-
-.PHONY: clean
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(LDFLAGS) -c $(source_files) -o $@
