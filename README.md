@@ -1,6 +1,5 @@
 # HopHopEngine
 
 Names:
-Azita
-Caleb
-
+* Azita
+* Caleb
