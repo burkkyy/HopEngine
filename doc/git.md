@@ -20,8 +20,7 @@
 `git commit -m "SOME COMMENT"`
 `git push`
 
-**NOTE:** When you push for the first time, you will be prompted for a password, copy and paste the following token:
-`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`
+**NOTE:** When you push for the first time, you will be prompted for a password, copy and paste the following token: see discord
 
 7. At this point, your changes are only pushed to **your** branch, to merge these changes to the `main` branch, login onto github in the browser, navigate to the `HopHopEngine` repo and click the green `Compare and create pull request`. From there "create the pull request".
 
