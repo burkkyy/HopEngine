@@ -1,27 +1,44 @@
 import os
 import platform
 
-def check_docker():
-    if not os.system('docker -v'):
-        print("Please install docker on your system")
-        exit(1)
+DEPENDENCIES = './requirements.txt'
+BUILD_IMAGE_NAME = 'hophopengine-build'
+UNIX_ENV = True
 
 def check_platform():
-    p = platform.system.lower()
+    p = platform.system().lower()
+
     if p == 'windows':
+        UNIX_ENV = False
         return False
-    else if p == 'linux':
+    elif p == 'linux' or p == 'darwin':
+        UNIX_ENV = True
         return True
     else:
         print("Build env does not support this platform")
         exit(1)
 
-if __name__ == '__main__':
-    check_docker()
+def is_image_built():
+    if not os.system(f'sudo docker image inspect {BUILD_IMAGE_NAME} > /dev/null 2>&1'):
+        return True
+    return False
 
-    if check_platform():
-        # linux build env
-        ...
+def build_image():
+    if UNIX_ENV:
+        os.system(f'sudo docker build buildenv/ -t {BUILD_IMAGE_NAME}')
     else:
-        # Windows build env
-        ...
+        os.system(f'docker build buildenv/ -t {BUILD_IMAGE_NAME}')
+
+def build():
+    if UNIX_ENV:
+        os.system(f'sudo docker run --rm -it -v $(pwd):/root/env {BUILD_IMAGE_NAME}')
+    else:
+        os.system(f'docker run --rm -it -v %cd%:/root/env {BUILD_IMAGE_NAME}')
+    
+if __name__ == '__main__':
+    check_platform()
+    
+    if not is_image_built():
+        build_image()
+    
+    build()

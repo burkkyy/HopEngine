@@ -1,4 +1,6 @@
-*.o
-*.bin
+__pycache__/
 obj/
 bin/
+
+*.o
+*.bin
