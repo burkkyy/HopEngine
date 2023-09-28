@@ -15,7 +15,7 @@ RUN yes | apt install \
     libxxf86vm-dev \
     libxi-dev
 
-VOLUME /root/env
-WORKDIR /root/env
+VOLUME /home/env
+WORKDIR /home/env
 
 CMD ["make"]
