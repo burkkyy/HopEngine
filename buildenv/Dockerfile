@@ -1,6 +1,11 @@
 FROM ubuntu:22.04
 
-RUN apt update && apt upgrade && apt install \
+# Update system
+RUN yes | apt update
+RUN yes | apt upgrade
+
+# Install Dependencies
+RUN apt apt install \
     build-essential \
     libvulkan-dev \
     vulkan-validationlayers-dev \
