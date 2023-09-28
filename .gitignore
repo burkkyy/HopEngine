@@ -1,6 +1,6 @@
 __pycache__/
-obj/
-bin/
+build/
 
 *.o
+*.a
 *.bin

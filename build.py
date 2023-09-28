@@ -5,8 +5,12 @@ DEPENDENCIES = './requirements.txt'
 BUILD_IMAGE_NAME = 'hophopengine-build'
 UNIX_ENV = True
 
-def check_platform():
+def check_env():
     p = platform.system().lower()
+
+    if os.system('docker -v >/dev/null 2>&1'):
+        print("Docker not found. See doc/buildenv/build.md for more")
+        exit(1)
 
     if p == 'windows':
         UNIX_ENV = False
@@ -36,9 +40,12 @@ def build():
         os.system(f'docker run --rm -it -v %cd%:/root/env {BUILD_IMAGE_NAME}')
     
 if __name__ == '__main__':
-    check_platform()
+    check_env()
     
-    if not is_image_built():
-        build_image()
-    
-    build()
+    try:
+        if not is_image_built():
+            build_image()
+        
+        build()
+    except:
+        print("Some build error has occured, see doc/buildenv/build.md for more") 

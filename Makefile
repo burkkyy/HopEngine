@@ -1,5 +1,5 @@
 CC = g++ -std=c++17
-CFLAGS = -O2 -Wall -I src/Utilities
+CFLAGS = -O2 -Wall -I src/
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
 SRC_DIR = src
@@ -10,10 +10,11 @@ MODULES := $(wildcard $(SRC_DIR)/*/)
 source_files = $(foreach dir,$(MODULES),$(wildcard $(dir)*.cpp))
 object_files =  $(patsubst %.cpp,$(BUILD_DIR)/obj/%.o,$(notdir $(source_files)))
 
-ENGINE_LIB = $(BUILD_DIR)/libHopHopEngine.a
+ENGINE_LIB = $(BUILD_DIR)/lib/libHopHopEngine.a
 
-app: app.cpp $(ENGINE_LIB)
-	$(CC) $< -L $(BUILD_DIR)/ -lHopHopEngine -o $@
+$(BUILD_DIR)/bin/app: $(SRC_DIR)/app.cpp $(ENGINE_LIB)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< -L $(dir $(ENGINE_LIB)) -lHopHopEngine -o $@
 
 $(ENGINE_LIB): $(object_files)
 	@mkdir -p $(dir $@)
@@ -24,8 +25,8 @@ $(object_files): $(source_files)
 	$(CC) $(CFLAGS) $(LDFLAGS) -c $(source_files) -o $@
 
 .PHONY: run clean
-run: app
-	./app
+run: $(BUILD_DIR)/bin/app
+	./$<
 
 clean: 
 	rm -rf build/
