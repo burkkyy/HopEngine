@@ -14,3 +14,4 @@ See `doc/buildenv/build.md` for more info
 * Azita
 * Caleb
 * Jake
+* Indigo

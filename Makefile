@@ -23,10 +23,3 @@ $(ENGINE_LIB): $(object_files)
 $(object_files): $(source_files)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(LDFLAGS) -c $(source_files) -o $@
-
-.PHONY: run clean
-run: $(BUILD_DIR)/bin/app
-	./$<
-
-clean: 
-	sudo rm -rf build/

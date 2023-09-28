@@ -5,7 +5,7 @@ RUN yes | apt update
 RUN yes | apt upgrade
 
 # Install Dependencies
-RUN yes | apt install \
+RUN apt apt install \
     build-essential \
     libvulkan-dev \
     vulkan-validationlayers-dev \
