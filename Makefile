@@ -29,4 +29,4 @@ run: $(BUILD_DIR)/bin/app
 	./$<
 
 clean: 
-	rm -rf build/
+	sudo rm -rf build/
