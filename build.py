@@ -8,23 +8,27 @@ UNIX_ENV = True
 def check_env():
     p = platform.system().lower()
 
-    if os.system('docker -v >/dev/null 2>&1'):
-        print("Docker not found. See doc/buildenv/build.md for more")
-        exit(1)
-
     if p == 'windows':
-        UNIX_ENV = False
+        if os.system('docker -v'):
+            print("Docker not found. See doc/buildenv/build.md for more")
+            exit(1)
         return False
     elif p == 'linux' or p == 'darwin':
-        UNIX_ENV = True
+        if os.system('docker -v >/dev/null 2>&1'):
+            print("Docker not found. See doc/buildenv/build.md for more")
+            exit(1)
         return True
     else:
         print("Build env does not support this platform")
         exit(1)
 
 def is_image_built():
-    if not os.system(f'sudo docker image inspect {BUILD_IMAGE_NAME} > /dev/null 2>&1'):
-        return True
+    if UNIX_ENV:
+        if not os.system(f'sudo docker image inspect {BUILD_IMAGE_NAME} > /dev/null 2>&1'):
+            return True
+    else:
+        if not os.system(f'docker image inspect {BUILD_IMAGE_NAME}'):
+            return True
     return False
 
 def build_image():
@@ -40,7 +44,7 @@ def build():
         os.system(f'docker run --rm -it -v %cd%:/root/env {BUILD_IMAGE_NAME}')
     
 if __name__ == '__main__':
-    check_env()
+    UNIX_ENV = check_env()
     
     try:
         if not is_image_built():
