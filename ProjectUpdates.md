@@ -4,5 +4,5 @@
 
 # Major Changes
 - Name change for the engine: we are now calling it Hop.
-- "Demo" for our project will _definitely_ include a rabbit and other objects.
+- "Demo" for our project will _definitely_ include a rabbit and other objects such as a carrot. Additionally, there will probably be rudimentary game physics.
 
