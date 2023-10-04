@@ -12,7 +12,6 @@ git config --global user.email "INSERT YOUR EMAIL"
 
 3. Set up your own branch. Ex. `git branch dev-caleb`
 
-
 4. Switch to work in your branch
 `git checkout dev-*NAME*`
 
