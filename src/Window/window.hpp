@@ -3,8 +3,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "Utilities/status_print.hpp"
-
 namespace bun {
 
 class Window {

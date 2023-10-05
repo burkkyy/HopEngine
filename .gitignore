@@ -1,6 +1,13 @@
 __pycache__/
 build/
 
+# Object files
 *.o
+
+# Linux files
 *.a
 *.bin
+
+# Windows files
+*.lib
+*.exe

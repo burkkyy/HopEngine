@@ -1,12 +1,16 @@
+/*
+ * This file is only for testing purposes.
+ */
 #include <iostream>
 
-#include "Window/window.hpp"
+#include "Engine/engine.hpp"
 
 int main(int argc, char** argv) {
     (void)argc;
     (void)argv;
 
-    std::cout << "Hello world!" << std::endl;
+    bun::Engine hop;
+    hop.run();
 
     return 0;
 }

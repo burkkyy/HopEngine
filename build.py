@@ -1,55 +1,184 @@
 import os
+import sys
+import shutil
 import platform
 
-DEPENDENCIES = './requirements.txt'
-BUILD_IMAGE_NAME = 'hophopengine-build'
-UNIX_ENV = True
+class CompilieError(Exception):
+    pass
+
+def ERROR(s: str, t: str = 'ERROR'):
+    print(f"\033[91m[{t}]\033[00m {s}")
+
+def UPDATE(s: str, t: str = 'UPDATE'):
+    print(f"\033[92m[{t}]\033[00m {s}")
+
+def INFO(s: str, t: str = 'INFO'):
+    print(f"\033[94m[{t}]\033[00m {s}")
+
+try:
+    import docker
+except:
+    ERROR("Docker not found. See\033[94m https://pypi.org/project/docker/\033[00m or install with pip:\n")
+    print("\tpip install docker\n")
+
+WINDOWS_TARGET = 'win64'
+LINUX_TARGET = 'linux'
+ALL_TARGET = 'all'
+DOCKER_IMAGE_WIN64 = 'hophopengine-win64-build'
+DOCKER_IMAGE_LINUX = 'hophopengine-linux-build'
+DOCKER_IMAGE_PATH_WIN64 = 'buildenv/win64/'
+DOCKER_IMAGE_PATH_LINUX = 'buildenv/linux/'
 
 def check_env():
     p = platform.system().lower()
 
-    if p == 'windows':
-        if os.system('docker -v'):
-            print("Docker not found. See doc/buildenv/build.md for more")
-            exit(1)
-        return False
-    elif p == 'linux' or p == 'darwin':
-        if os.system('docker -v >/dev/null 2>&1'):
-            print("Docker not found. See doc/buildenv/build.md for more")
-            exit(1)
-        return True
-    else:
-        print("Build env does not support this platform")
+    try:
+        client = docker.from_env()
+    except docker.errors.DockerException as e:
+        ERROR("Permission to get docker env denied, try running as root.\nSee doc/buildenv/build.md for more")
         exit(1)
 
-def is_image_built():
-    if UNIX_ENV:
-        if not os.system(f'sudo docker image inspect {BUILD_IMAGE_NAME} > /dev/null 2>&1'):
-            return True
+    if p == 'windows':
+        return False
+    elif p == 'linux':
+        return True
     else:
-        if not os.system(f'docker image inspect {BUILD_IMAGE_NAME}'):
-            return True
-    return False
+        ERROR("This script does not support the host platform")
+        exit(1)
 
-def build_image():
-    if UNIX_ENV:
-        os.system(f'sudo docker build buildenv/ -t {BUILD_IMAGE_NAME}')
-    else:
-        os.system(f'docker build buildenv/ -t {BUILD_IMAGE_NAME}')
+def is_docker_image_built(client: docker.client.DockerClient, image_name: str):
+    return True if len(client.images.list(filters={'reference': image_name})) > 0 else False
 
-def build():
-    if UNIX_ENV:
-        os.system(f'sudo docker run --rm -it -v $(pwd):/root/env {BUILD_IMAGE_NAME}')
+def build_docker_image(client: docker.client.DockerClient, image_path: str, image_name: str):
+    INFO(f"Building docker image \"{image_name}\"...")
+    client.images.build(
+        path=image_path, 
+        tag=image_name,
+        quiet=False,
+    )
+    INFO(f"Built docker image \"{image_name}\"!")
+
+def run_docker_image(client: docker.client.DockerClient, image_name: str):
+    # Set up config.mk or else makefile fails
+    if image_name == DOCKER_IMAGE_LINUX:
+        try:
+            os.remove("buildenv/config.mk")
+        except FileNotFoundError:
+            pass
+        shutil.copyfile("buildenv/linux/config.mk", "buildenv/config.mk")
+    elif image_name == DOCKER_IMAGE_WIN64:
+        try:
+            os.remove("buildenv/config.mk")
+        except FileNotFoundError:
+            pass
+        shutil.copyfile("buildenv/win64/config.mk", "buildenv/config.mk")
     else:
-        os.system(f'docker run --rm -it -v %cd%:/root/env {BUILD_IMAGE_NAME}')
+        ERROR(f"Can't run image: \"{image_name}\"", "DOCKER")
+        exit(1)
     
-if __name__ == '__main__':
-    UNIX_ENV = check_env()
-    
+    # Handle any build errors
+    UPDATE(f"Going into \"{image_name}\" buildenv...", "DOCKER")
+    c = client.containers.run(
+            image=image_name,
+            volumes=[f"{os.getcwd()}:/root/env"],
+            stdout=True,
+            stderr=True,
+            remove=True,
+            detach=True,
+        )
     try:
-        if not is_image_built():
-            build_image()
-        
-        build()
-    except:
-        print("Some build error has occured, see doc/buildenv/build.md for more") 
+        exit_code = c.wait()['StatusCode']
+        logs = c.logs(stdout=True, stderr=True, stream=False, timestamps=False)
+        print(logs.decode('utf-8'))
+        if exit_code != 0:
+            raise docker.errors.ContainerError('', exit_code, 'make', image_name, '')
+        INFO(f"Successfully ran \"{image_name}\"!", "BUILD")
+    except docker.errors.ContainerError:
+        ERROR("Some error has occured in the Makefile...", "BUILD")
+        exit(1)
+    
+    # Remove config.mk after compilation
+    try:
+        os.remove("buildenv/config.mk")
+    except FileNotFoundError:
+        pass
+
+def make_win64(client: docker.client.DockerClient):
+    if not is_docker_image_built(client, DOCKER_IMAGE_WIN64):
+        build_docker_image(
+            client,
+            DOCKER_IMAGE_PATH_WIN64,
+            DOCKER_IMAGE_WIN64
+        )
+    run_docker_image(client, DOCKER_IMAGE_WIN64)
+    UPDATE("Binaries for win64 build in build/win64/", "BUILD")
+
+def make_linux(client: docker.client.DockerClient):
+    if not is_docker_image_built(client, DOCKER_IMAGE_LINUX):
+        build_docker_image(
+            client,
+            DOCKER_IMAGE_PATH_LINUX,
+            DOCKER_IMAGE_LINUX
+        )
+    run_docker_image(client, DOCKER_IMAGE_LINUX)
+    UPDATE("Binaries for linux build in build/linux/", "BUILD")
+
+def make(target_arch: str):
+    client = docker.from_env()
+    
+    if target_arch == WINDOWS_TARGET:
+        make_win64(client)
+    elif target_arch == LINUX_TARGET:
+        make_linux(client)
+    elif target_arch == ALL_TARGET:
+        make_win64(client)
+        make_linux(client)
+        INFO("Successfully built all targets!", "BUILD")
+    else:
+        ERROR(f'Target system "{target_arch}" not supported', 'BUILD')
+        exit(1)
+
+if __name__ == '__main__':
+    is_linux_host = check_env()
+    target = None
+
+    if len(sys.argv) == 1:
+        if is_linux_host:
+            UPDATE("Building for linux target system...", "BUILD")
+            target = LINUX_TARGET
+        else:
+            UPDATE("Building for windows target system...", "BUILD")
+            target = WINDOWS_TARGET
+    else:
+        arg = sys.argv[1].lower()
+        if arg == 'linux':
+            UPDATE("Building for linux target system...", "BUILD")
+            target = LINUX_TARGET
+        elif arg == 'win64':
+            UPDATE("Building for windows target system...", "BUILD")
+            target = WINDOWS_TARGET
+        elif arg == 'all':
+            UPDATE("Building for linux and windows system...", "BUILD")
+            target = ALL_TARGET
+        elif arg == 'clean':
+            client = docker.from_env()
+            result = client.api.prune_images(filters={
+                'dangling': True,
+                'label': [],
+                'until': '24h'
+            })
+            print(result)
+            exit()
+        elif arg == 'help':
+            INFO('Available build targets:', 'HELP')
+            print("\n\tlinux\twin64\tall")
+            print("\n\tEx. python build.py linux\n")
+            INFO('Other available args:', 'HELP')
+            print("\n\thelp\tclean\n")
+            exit()
+        else:
+            ERROR('Invalid args. For available build targets and help run:\n')
+            print('\tpython build.py help\n')
+            exit(1)
+
+    make(target)
