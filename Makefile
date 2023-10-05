@@ -1,25 +1,50 @@
-CC = g++ -std=c++17
-CFLAGS = -O2 -Wall -I src/
-LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+include buildenv/config.mk
 
-SRC_DIR = src
-BUILD_DIR = build
+# NOTE: The following variables must be defined in a seperate config.mk file:
+# 	$(ARCH) 	- The target system ex. linux
+# 	$(OUT) 		- The target file ex. $(_ARCH_BUILD)/bin/app.exe
+# 	$(CC) 		- The compilier to be used
+# 	$(CFLAGS) 	- Compilier flags
+# 	$(LDFLAGS) 	- Linker flags
 
-MODULES := $(wildcard $(SRC_DIR)/*/)
+# Project root dir 
+_ROOT = .
 
-source_files = $(foreach dir,$(MODULES),$(wildcard $(dir)*.cpp))
-object_files =  $(patsubst %.cpp,$(BUILD_DIR)/obj/%.o,$(notdir $(source_files)))
+# Where all built files go
+_BUILD = $(_ROOT)/build
 
-ENGINE_LIB = $(BUILD_DIR)/lib/libHopHopEngine.a
+# Where all built files for target system go
+_ARCH_BUILD = $(_BUILD)/$(ARCH)
 
-$(BUILD_DIR)/bin/app: $(SRC_DIR)/app.cpp $(ENGINE_LIB)
+# The root folder for project source code and header files
+_SRC = $(_ROOT)/src
+
+# Each module that holds all the source files
+_MODULE := $(wildcard $(_SRC)/*/)
+
+# Source code from each module
+SRC = $(foreach dir,$(_MODULE),$(wildcard $(dir)*.cpp))
+
+# Object files from source code
+OBJ = $(patsubst %.cpp,$(_ARCH_BUILD)/obj/%.o,$(notdir $(SRC)))
+
+# Graphics engine from object files
+ENGINE = $(_ARCH_BUILD)/lib/libHopHopEngine.a
+
+all: $(OUT) $(ENGINE) $(OBJ) $(SRC)
+
+$(OUT): $(_SRC)/app.cpp $(ENGINE)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $< -L $(dir $(ENGINE_LIB)) -lHopHopEngine -o $@
+	$(CC) $(CFLAGS) $< $(ENGINE) -o $@ $(LDFLAGS)
 
-$(ENGINE_LIB): $(object_files)
+$(ENGINE): $(OBJ) $(SRC)
 	@mkdir -p $(dir $@)
-	ar rcs $@ $^
+	$(AR) rcs $@ $^
 
-$(object_files): $(source_files)
+$(OBJ): $(SRC)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(LDFLAGS) -c $(source_files) -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@ $(LDFLAGS)
+
+.PHONY: clean
+clean:
+	-rm -rf $(_BUILD)

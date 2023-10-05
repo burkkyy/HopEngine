@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "Window/window.hpp"
 
 namespace bun {
 
@@ -7,6 +7,10 @@ Window::Window(int w, int h) : width{w}, height{h} {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     win = glfwCreateWindow(width, height, NAME, nullptr, nullptr);
+
+    while(!should_close()){
+        glfwPollEvents();
+    }
 }
 
 Window::~Window(){

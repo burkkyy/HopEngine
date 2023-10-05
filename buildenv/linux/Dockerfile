@@ -1,10 +1,9 @@
 FROM ubuntu:22.04
 
 # Update system
-RUN yes | apt update
-RUN yes | apt upgrade
+RUN apt update && apt install -y
 
-# Install Dependencies
+# Install build dependencies
 RUN yes | apt install \
     build-essential \
     libvulkan-dev \
