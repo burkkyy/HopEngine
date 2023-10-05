@@ -77,16 +77,24 @@ def run_docker_image(client: docker.client.DockerClient, image_name: str):
         exit(1)
     
     # Handle any build errors
-    try:
-        UPDATE(f"Going into \"{image_name}\" buildenv...", "DOCKER")
-        client.containers.run(
+    UPDATE(f"Going into \"{image_name}\" buildenv...", "DOCKER")
+    c = client.containers.run(
             image=image_name,
-            volumes=[f"{os.getcwd()}:/root/env"]
+            volumes=[f"{os.getcwd()}:/root/env"],
+            stdout=True,
+            stderr=True,
+            remove=True,
+            detach=True,
         )
+    try:
+        exit_code = c.wait()['StatusCode']
+        logs = c.logs(stdout=True, stderr=True, stream=False, timestamps=False)
+        print(logs.decode('utf-8'))
+        if exit_code != 0:
+            raise docker.errors.ContainerError('', exit_code, 'make', image_name, '')
         INFO(f"Successfully ran \"{image_name}\"!", "BUILD")
-    except docker.errors.ContainerError as e:
+    except docker.errors.ContainerError:
         ERROR("Some error has occured in the Makefile...", "BUILD")
-        print(e.stderr.decode('utf-8'))
         exit(1)
     
     # Remove config.mk after compilation

@@ -21,29 +21,36 @@ _SRC = $(_ROOT)/src
 
 # Each module that holds all the source files
 _MODULE := $(wildcard $(_SRC)/*/)
+#$(info _MODULE: $(_MODULE))
 
 # Source code from each module
 SRC = $(foreach dir,$(_MODULE),$(wildcard $(dir)*.cpp))
+#$(info SRC: $(SRC))
 
 # Object files from source code
 OBJ = $(patsubst %.cpp,$(_ARCH_BUILD)/obj/%.o,$(notdir $(SRC)))
+OBJ_HACK = $(SRC:.cpp=.o)	# A work around
+
+#$(info OBJ: $(OBJ))
 
 # Graphics engine from object files
 ENGINE = $(_ARCH_BUILD)/lib/libHopHopEngine.a
 
-all: $(OUT) $(ENGINE) $(OBJ) $(SRC)
+all: $(OUT)
 
 $(OUT): $(_SRC)/app.cpp $(ENGINE)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< $(ENGINE) -o $@ $(LDFLAGS)
 
-$(ENGINE): $(OBJ) $(SRC)
+$(ENGINE): $(OBJ)
 	@mkdir -p $(dir $@)
-	$(AR) rcs $@ $^
+	$(AR) rcs $@ $(OBJ)
 
-$(OBJ): $(SRC)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $^ -o $@ $(LDFLAGS)
+# Prolly the most hacky, gross code ever
+$(OBJ): $(OBJ_HACK)
+$(OBJ_HACK): $(SRC)
+	@mkdir -p $(dir $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)))
+	$(CC) $(CFLAGS) -I $(dir $@) -c $(patsubst %.o,%.cpp,$@) -o $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)) $(LDFLAGS)
 
 .PHONY: clean
 clean:
