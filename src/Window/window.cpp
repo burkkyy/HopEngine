@@ -1,5 +1,7 @@
 #include "window.hpp"
 
+#include "Utilities/status_print.hpp"
+
 namespace bun {
 
 Window::Window(int w, int h) : width{w}, height{h} {
@@ -7,6 +9,10 @@ Window::Window(int w, int h) : width{w}, height{h} {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     win = glfwCreateWindow(width, height, NAME, nullptr, nullptr);
+
+    while(!should_close()){
+        glfwPollEvents();
+    }
 }
 
 Window::~Window(){

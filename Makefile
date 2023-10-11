@@ -1,21 +1,57 @@
-CC = g++ -std=c++17
-CFLAGS = -O2 -Wall
-LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+include buildenv/config.mk
 
-SRC_DIR = src/
+# NOTE: The following variables must be defined in a seperate config.mk file:
+# 	$(ARCH) 	- The target system ex. linux
+# 	$(OUT) 		- The target file ex. $(_ARCH_BUILD)/bin/app.exe
+# 	$(CC) 		- The compilier to be used
+# 	$(CFLAGS) 	- Compilier flags
+# 	$(LDFLAGS) 	- Linker flags
 
-# MODULES := $(wildcard $(SRC_DIR/*/))
-MODULES = Window/
+# Project root dir 
+_ROOT = .
 
-source_files = $(foreach dir,$(MODULES),$(wildcard $(dir)/*.cpp))
-object_files = $(source_files:.cpp=.o) 
+# Where all built files go
+_BUILD = $(_ROOT)/build
 
-libgfxEngine.a:
-	ar rcs $@ $^
+# Where all built files for target system go
+_ARCH_BUILD = $(_BUILD)/$(ARCH)
 
-$(object_files): $(source_files)
-	echo $@ $^
-# @mkdir -l $(dir $@)
-# $(CC) $(CFLAGS) $(LDFLAGS)
+# The root folder for project source code and header files
+_SRC = $(_ROOT)/src
+
+# Each module that holds all the source files
+_MODULE := $(wildcard $(_SRC)/*/)
+#$(info _MODULE: $(_MODULE))
+
+# Source code from each module
+SRC = $(foreach dir,$(_MODULE),$(wildcard $(dir)*.cpp))
+#$(info SRC: $(SRC))
+
+# Object files from source code
+OBJ = $(patsubst %.cpp,$(_ARCH_BUILD)/obj/%.o,$(notdir $(SRC)))
+OBJ_HACK = $(SRC:.cpp=.o)	# A work around
+
+#$(info OBJ: $(OBJ))
+
+# Graphics engine from object files
+ENGINE = $(_ARCH_BUILD)/lib/libHopHopEngine.a
+
+all: $(OUT)
+
+$(OUT): $(_SRC)/app.cpp $(ENGINE)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< $(ENGINE) -o $@ $(LDFLAGS)
+
+$(ENGINE): $(OBJ)
+	@mkdir -p $(dir $@)
+	$(AR) rcs $@ $(OBJ)
+
+# Prolly the most hacky, gross code ever
+$(OBJ): $(OBJ_HACK)
+$(OBJ_HACK): $(SRC)
+	@mkdir -p $(dir $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)))
+	$(CC) $(CFLAGS) -I $(dir $@) -c $(patsubst %.o,%.cpp,$@) -o $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)) $(LDFLAGS)
 
 .PHONY: clean
+clean:
+	-rm -rf $(_BUILD)
