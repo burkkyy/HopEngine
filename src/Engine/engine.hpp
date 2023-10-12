@@ -10,13 +10,13 @@
 #include "Swapchain/swapchain.hpp"
 #include "Pipeline/pipeline.hpp"
 
-namespace bun {
+namespace hop {
 
 class Engine {
 public:
     const int WIDTH = 800;
     const int HEIGHT = 600;
-    const char* NAME = "bun bun engine";
+    const char* NAME = "hop engine";
 
     Engine();
     ~Engine();

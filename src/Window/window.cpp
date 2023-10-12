@@ -2,7 +2,7 @@
 
 #include "Utilities/status_print.hpp"
 
-namespace bun {
+namespace hop {
 
 Window::Window(int w, int h) : width{w}, height{h} {
     glfwInit();

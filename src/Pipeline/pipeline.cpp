@@ -1,6 +1,6 @@
 #include "pipeline.hpp"
 
-namespace bun {
+namespace hop {
 
 Pipeline::Pipeline(){
 }

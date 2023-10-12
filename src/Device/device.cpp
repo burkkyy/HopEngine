@@ -5,7 +5,7 @@
 #include <set>
 #include <cstring>
 
-namespace bun {
+namespace hop {
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT m_severity,

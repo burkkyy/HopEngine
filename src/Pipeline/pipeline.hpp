@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace bun {
+namespace hop {
 
 class Pipeline {
 public:

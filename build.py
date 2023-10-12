@@ -78,6 +78,8 @@ def run_docker_image(client: docker.client.DockerClient, image_name: str):
     
     # Handle any build errors
     UPDATE(f"Going into \"{image_name}\" buildenv...", "DOCKER")
+
+    ''' Idk this just never worked, fix later
     c = client.containers.run(
             image=image_name,
             volumes=[f"{os.getcwd()}:/root/env"],
@@ -96,7 +98,13 @@ def run_docker_image(client: docker.client.DockerClient, image_name: str):
     except docker.errors.ContainerError:
         ERROR("Some error has occured in the Makefile...", "BUILD")
         exit(1)
-    
+    ''' # Use the following instead:
+    print(f'docker run --rm -it -v .:/root/env {image_name}')
+    if os.system(f'docker run --rm -it -v .:/root/env {image_name}'):
+        # docker returned error code (not 0)
+        ERROR(f"Failded building source in image: {image_name}", "BUILD")
+        raise Exception # idk what else to put
+
     # Remove config.mk after compilation
     try:
         os.remove("buildenv/config.mk")

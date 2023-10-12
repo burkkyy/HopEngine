@@ -6,7 +6,7 @@
 
 #include "Window/window.hpp"
 
-namespace bun {
+namespace hop {
 
 /* SwapChainSupportDetails helper struct */
 struct SCSD {

@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-namespace bun {
+namespace hop {
 
 Engine::Engine(){
 }

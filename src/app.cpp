@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     (void)argc;
     (void)argv;
 
-    bun::Engine hop;
+    hop::Engine hop;
     hop.run();
 
     return 0;
