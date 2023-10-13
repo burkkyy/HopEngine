@@ -103,13 +103,15 @@ def run_docker_image(client: docker.client.DockerClient, image_name: str):
     if os.system(f'docker run --rm -it -v .:/root/env {image_name}'):
         # docker returned error code (not 0)
         ERROR(f"Failded building source in image: {image_name}", "BUILD")
-        raise Exception # idk what else to put
+        return False
 
     # Remove config.mk after compilation
     try:
         os.remove("buildenv/config.mk")
     except FileNotFoundError:
         pass
+
+    return True
 
 def make_win64(client: docker.client.DockerClient):
     if not is_docker_image_built(client, DOCKER_IMAGE_WIN64):
@@ -118,8 +120,10 @@ def make_win64(client: docker.client.DockerClient):
             DOCKER_IMAGE_PATH_WIN64,
             DOCKER_IMAGE_WIN64
         )
-    run_docker_image(client, DOCKER_IMAGE_WIN64)
-    UPDATE("Binaries for win64 build in build/win64/", "BUILD")
+    if run_docker_image(client, DOCKER_IMAGE_WIN64):
+        UPDATE("Binaries for win64 build in build/win64/", "BUILD")
+    else:
+        exit()
 
 def make_linux(client: docker.client.DockerClient):
     if not is_docker_image_built(client, DOCKER_IMAGE_LINUX):
@@ -128,8 +132,10 @@ def make_linux(client: docker.client.DockerClient):
             DOCKER_IMAGE_PATH_LINUX,
             DOCKER_IMAGE_LINUX
         )
-    run_docker_image(client, DOCKER_IMAGE_LINUX)
-    UPDATE("Binaries for linux build in build/linux/", "BUILD")
+    if run_docker_image(client, DOCKER_IMAGE_LINUX):
+        UPDATE("Binaries for linux build in build/linux/", "BUILD")
+    else:
+        exit()
 
 def make(target_arch: str):
     client = docker.from_env()
