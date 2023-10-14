@@ -9,7 +9,7 @@ namespace hop {
 
 class SwapChain {
 public:
-    SwapChain(Device&, VkExtent2D);
+    SwapChain(Device& d, VkExtent2D e);
     ~SwapChain();
 
     SwapChain(const SwapChain&) = delete;

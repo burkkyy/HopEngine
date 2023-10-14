@@ -14,7 +14,7 @@
 // glfw libraries
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#define NDEBUG
+//#define NDEBUG
 
 // glm libraries
 // #include <glm/glm.hpp>

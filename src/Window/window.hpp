@@ -7,7 +7,7 @@ namespace hop {
 
 class Window {
 public:
-    Window(int, int);
+    Window(int w, int h);
     ~Window();
 
     Window(const Window&) = delete;
@@ -15,7 +15,7 @@ public:
 
     bool should_close(){ return glfwWindowShouldClose(win); }
     VkExtent2D get_extent(){ return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
-    void create_surface(VkInstance, VkSurfaceKHR*);
+    void create_surface(VkInstance instance, VkSurfaceKHR* surface);
 
 private:
     int width;
