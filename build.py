@@ -181,21 +181,12 @@ if __name__ == '__main__':
         elif arg == 'all':
             UPDATE("Building for linux and windows system...", "BUILD")
             target = ALL_TARGET
-        elif arg == 'clean':
-            client = docker.from_env()
-            result = client.api.prune_images(filters={
-                'dangling': True,
-                'label': [],
-                'until': '24h'
-            })
-            print(result)
-            exit()
         elif arg == 'help':
             INFO('Available build targets:', 'HELP')
             print("\n\tlinux\twin64\tall")
             print("\n\tEx. python build.py linux\n")
             INFO('Other available args:', 'HELP')
-            print("\n\thelp\tclean\n")
+            print("\n\thelp\n")
             exit()
         else:
             ERROR('Invalid args. For available build targets and help run:\n')

@@ -1,7 +1,7 @@
 #include "pipeline.hpp"
 
 #include "Utilities/status_print.hpp"
-#include "Object_Model/object_model.hpp"
+#include "Objects/object_model.hpp"
 
 #include <fstream>
 
@@ -169,8 +169,8 @@ void Pipeline::create_graphics_pipeline(const PipelineConfigInfo& config_info){
     };
 
     // Define how vertex data will be passed to the vertex shader in a struct
-    auto binding_descriptions = Object_Model::Vertex::get_binding_descriptions();
-    auto attribute_descriptions = Object_Model::Vertex::get_attribute_descriptions();
+    auto binding_descriptions = ObjectModel::Vertex::get_binding_descriptions();
+    auto attribute_descriptions = ObjectModel::Vertex::get_attribute_descriptions();
 
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

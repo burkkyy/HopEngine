@@ -12,7 +12,7 @@
 
 namespace hop {
 
-class Object_Model {
+class ObjectModel {
 public:
     struct Vertex {
         glm::vec2 position{};
@@ -28,11 +28,11 @@ public:
         }
     };
 
-    Object_Model(Device& device, const std::vector<Vertex>& vertices);
-    ~Object_Model();
+    ObjectModel(Device& device, const std::vector<Vertex>& vertices);
+    ~ObjectModel();
 
-    Object_Model(const Object_Model&) = delete;
-    Object_Model& operator=(const Object_Model&) = delete;
+    ObjectModel(const ObjectModel&) = delete;
+    ObjectModel& operator=(const ObjectModel&) = delete;
 
     void bind(VkCommandBuffer command_buffer);
     void draw(VkCommandBuffer command_buffer);

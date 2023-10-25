@@ -4,7 +4,7 @@
 
 namespace hop {
 
-std::vector<VkVertexInputBindingDescription> Object_Model::Vertex::get_binding_descriptions(){
+std::vector<VkVertexInputBindingDescription> ObjectModel::Vertex::get_binding_descriptions(){
     std::vector<VkVertexInputBindingDescription> binding_descriptions(1);
     binding_descriptions[0].binding = 0;
     binding_descriptions[0].stride = sizeof(Vertex);
@@ -12,7 +12,7 @@ std::vector<VkVertexInputBindingDescription> Object_Model::Vertex::get_binding_d
     return binding_descriptions;
 }
 
-std::vector<VkVertexInputAttributeDescription> Object_Model::Vertex::get_attribute_descriptions(){
+std::vector<VkVertexInputAttributeDescription> ObjectModel::Vertex::get_attribute_descriptions(){
     std::vector<VkVertexInputAttributeDescription> attribute_descriptions(2);
     attribute_descriptions[0].binding = 0;
     attribute_descriptions[0].location = 0;
@@ -26,26 +26,26 @@ std::vector<VkVertexInputAttributeDescription> Object_Model::Vertex::get_attribu
     return attribute_descriptions;
 }
 
-Object_Model::Object_Model(Device& device, const std::vector<Vertex>& vertices) : device{device} {
+ObjectModel::ObjectModel(Device& device, const std::vector<Vertex>& vertices) : device{device} {
     create_vertex_buffers(vertices);
 }
 
-Object_Model::~Object_Model(){
+ObjectModel::~ObjectModel(){
     vkDestroyBuffer(device.get_device(), vertex_buffer, nullptr);
     vkFreeMemory(device.get_device(), vertex_buffer_memory, nullptr);
 }
 
-void Object_Model::bind(VkCommandBuffer command_buffer){
+void ObjectModel::bind(VkCommandBuffer command_buffer){
     VkBuffer buffer[] = { vertex_buffer };
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(command_buffer, 0, 1, buffer, offsets);
 }
 
-void Object_Model::draw(VkCommandBuffer command_buffer){
+void ObjectModel::draw(VkCommandBuffer command_buffer){
     vkCmdDraw(command_buffer, vertex_count, 1, 0, 0);
 }
 
-void Object_Model::create_vertex_buffers(const std::vector<Vertex>& vertices){
+void ObjectModel::create_vertex_buffers(const std::vector<Vertex>& vertices){
     vertex_count = static_cast<uint32_t>(vertices.size());
     assert(vertex_count >= 3);
     
