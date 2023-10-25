@@ -28,19 +28,34 @@ void Engine::run(){
 
     auto red = GameObject::create_object();
     red.transform.scale = glm::vec2{.05f};
-    red.transform.translation = {.5f, .5f};
+    red.transform.translation = {-0.97000436f, 0.24308753f};
     red.color = {1.f, 0.f, 0.f};
-    red.rigidBody2d.velocity = {-.5f, .0f};
+    red.rigidBody2d.velocity = {0.4662036850f, 0.4323657300f};
     red.model = circleModel;
     physicsObjects.push_back(std::move(red));
 
     auto blue = GameObject::create_object();
     blue.transform.scale = glm::vec2{.05f};
-    blue.transform.translation = {-.45f, -.25f};
+    blue.transform.translation = {0.97000436, -0.24308753};
     blue.color = {0.f, 0.f, 1.f};
-    blue.rigidBody2d.velocity = {.5f, .0f};
+    blue.rigidBody2d.velocity = {0.4662036850f, 0.4323657300f};
     blue.model = circleModel;
     physicsObjects.push_back(std::move(blue));
+
+    auto white = GameObject::create_object();
+    white.transform.scale = glm::vec2{.05f};
+    white.transform.translation = {.0f, .0f};
+    white.color = {1.f, 1.f, 1.f};
+    white.rigidBody2d.velocity = {-0.93240737f, -0.86473146f};
+    white.model = circleModel;
+    physicsObjects.push_back(std::move(white));
+
+    /*
+    r1(0) = -r3(0) = (-0.97000436, 0.24308753);
+    r2(0) = (0,0);
+    v1(0) = v3(0) = (0.4662036850, 0.4323657300); 
+    v2(0) = (-0.93240737, -0.86473146)
+    */
 
     // create vector field
     std::vector<GameObject> vectorField{};
