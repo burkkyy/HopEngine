@@ -51,11 +51,18 @@ def is_docker_image_built(client: docker.client.DockerClient, image_name: str):
 
 def build_docker_image(client: docker.client.DockerClient, image_path: str, image_name: str):
     INFO(f"Building docker image \"{image_name}\"...")
+    
+    if os.system(f'docker build {image_path} -t {image_name}'):
+        ERROR(f"Failed to build docker image: {image_name}", "DOCKER")
+        exit(1)
+    
+    ''' This doesn't print out anything usefull
     client.images.build(
         path=image_path, 
         tag=image_name,
         quiet=False,
     )
+    '''
     INFO(f"Built docker image \"{image_name}\"!")
 
 def run_docker_image(client: docker.client.DockerClient, image_name: str):

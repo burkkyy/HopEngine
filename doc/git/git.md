@@ -17,14 +17,24 @@ git config --global user.email "INSERT YOUR EMAIL"
 
 5. Now you can make changes to the repo, please add your name to the `README.md`
 
-6. To add this change to the main, first stadge the change, commit it, and then push it:
+6. To add this to the repo:
 ```bash
 git add .
 git commit -m "SOME COMMENT"
-git push
+git push origin dev-*NAME*
 ```
->**NOTE:** When you push for the first time, you will be prompted for a password, copy and paste the following token: see discord
 
-7. At this point, your changes are only pushed to **your** branch, to merge these changes to the `main` branch, login onto github in the browser, navigate to the `HopHopEngine` repo and click the green `Compare and create pull request`. From there "create the pull request".
+7. The next step from here is adding you changes on your branch to the `dev` branch. The `dev` branch is where all features go to that aren't quite ready to go to `main`
+
+```bash
+git checkout dev-*NAME*
+git branch dev           # If dev branch does not exist
+git merge dev dev-*NAME* # if dev branch does exist
+git push origin dev
+```
+
+8. To merge these changes to the `main` branch, login onto github in the browser, navigate to the repo and click the green `Compare and create pull request`
 
 >**NOTE:** Indigo and I will have to review each pull request and once both of use approve only then will your branch be merged with the proteced main branch.
+
+>**NOTE:** When you push for the first time, you will be prompted for a password, copy and paste the following token: see discord

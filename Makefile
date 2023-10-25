@@ -38,7 +38,7 @@ ENGINE = $(_ARCH_BUILD)/lib/libHopHopEngine.a
 
 all: $(OUT)
 
-$(OUT): $(_SRC)/app.cpp $(ENGINE)
+$(OUT): $(_SRC)/app.cpp $(ENGINE) shader.frag.spv shader.vert.spv
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< $(ENGINE) -o $@ $(LDFLAGS)
 
@@ -51,6 +51,13 @@ $(OBJ): $(OBJ_HACK)
 $(OBJ_HACK): $(SRC)
 	@mkdir -p $(dir $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)))
 	$(CC) $(CFLAGS) -I $(dir $@) -c $(patsubst %.o,%.cpp,$@) -o $(patsubst %.o,$(_ARCH_BUILD)/obj/%.o,$(notdir $@)) $(LDFLAGS)
+
+# Compilie shaders
+shader.vert.spv: shaders/shader.vert
+	glslc $^ -o $(dir $(OUT))/$@
+
+shader.frag.spv: shaders/shader.frag	
+	glslc $^ -o $(dir $(OUT))/$@
 
 .PHONY: clean
 clean:

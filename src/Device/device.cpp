@@ -28,12 +28,16 @@ Device::Device(Window& win) : window{win} {
     window.create_surface(instance, &surface);
     pick();
     create_logical_device();
+    create_command_pool();
 }
 
 Device::~Device(){
     if(enable_validation_layers){
         destroy_debug_utils_messenger_EXT(instance, debug_messenger, nullptr);
     }
+
+    vkDestroyCommandPool(device, command_pool, nullptr);
+    VK_INFO("destroyed command pool");
 
     vkDestroyDevice(device, nullptr);
     VK_INFO("destroyed logical device");
@@ -92,7 +96,7 @@ void Device::create_instance(){
     */
     VkApplicationInfo app_info{};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pApplicationName = "Hello Triangle";
+    app_info.pApplicationName = "Hop";
     app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     app_info.pEngineName = "No Engine";
     app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -249,7 +253,7 @@ void Device::pick(){
 }
 
 bool Device::is_device_suitable(VkPhysicalDevice device){
-    QFI indices = find_que_families(device);
+    QueFamilyIndices indices = find_que_families(device);
     bool extensions_support = check_device_extension_support(device);
 
     /* Get basic device properties such as
@@ -267,8 +271,8 @@ bool Device::is_device_suitable(VkPhysicalDevice device){
     /* Checking if device supports swapchain */
     bool sc = false;
     if(extensions_support){
-        SCSD sc_support = query_swapchain_support(device);
-        sc = !sc_support.formats.empty() && !sc_support.present_modes.empty();
+        SwapChainSupportDetails support = query_swapchain_support(device);
+        sc = !support.formats.empty() && !support.present_modes.empty();
     }
 
     return ~indices && extensions_support && sc && device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && device_features.geometryShader;
@@ -289,8 +293,8 @@ bool Device::check_device_extension_support(VkPhysicalDevice device){
     return required_extensions.empty();
 }
 
-QFI Device::find_que_families(VkPhysicalDevice device){
-    QFI indices;
+QueFamilyIndices Device::find_que_families(VkPhysicalDevice device){
+    QueFamilyIndices indices;
     
     /* Get number of queue families available in device */
     uint32_t count = 0;
@@ -318,7 +322,7 @@ QFI Device::find_que_families(VkPhysicalDevice device){
 }
 
 void Device::create_logical_device(){
-    QFI indices = find_que_families(physical_device);
+    QueFamilyIndices indices = find_que_families(physical_device);
 
     std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
     std::set<uint32_t> unique_queue_families = {
@@ -365,8 +369,8 @@ void Device::create_logical_device(){
     vkGetDeviceQueue(device, indices.present_family.value(), 0, &present_queue);
 }
 
-SCSD Device::query_swapchain_support(VkPhysicalDevice device){
-    SCSD details;
+SwapChainSupportDetails Device::query_swapchain_support(VkPhysicalDevice device){
+    SwapChainSupportDetails details;
 
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
     
@@ -385,6 +389,164 @@ SCSD Device::query_swapchain_support(VkPhysicalDevice device){
     }
 
     return details;
+}
+
+VkFormat Device::find_supported_format(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features){
+    for (VkFormat format : candidates) {
+        VkFormatProperties properties;
+        vkGetPhysicalDeviceFormatProperties(physical_device, format, &properties);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & features) == features) {
+            return format;
+        } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (properties.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+    VK_ERROR("failed to find supported format");
+}
+
+uint32_t Device::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties mem_properties;
+    vkGetPhysicalDeviceMemoryProperties(physical_device, &mem_properties);
+    
+    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++){
+        if((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties){
+            return i;
+        }
+    }
+    VK_ERROR("failed to find suitable memory type!");
+}
+
+void Device::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& buffer_memory){
+    VkBufferCreateInfo buffer_info = {};
+    buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    buffer_info.size = size;
+    buffer_info.usage = usage;
+    buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    if(vkCreateBuffer(device, &buffer_info, nullptr, &buffer) != VK_SUCCESS){
+        VK_ERROR("failed to create vertex buffer");
+    }
+    VK_INFO("Created vertex buffer");
+
+    VkMemoryRequirements mem_requirements;
+    vkGetBufferMemoryRequirements(device, buffer, &mem_requirements);
+
+    VkMemoryAllocateInfo allocation_info = {};
+    allocation_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocation_info.allocationSize = mem_requirements.size;
+    allocation_info.memoryTypeIndex = find_memory_type(mem_requirements.memoryTypeBits, properties);
+
+    if(vkAllocateMemory(device, &allocation_info, nullptr, &buffer_memory) != VK_SUCCESS){
+        VK_ERROR("failed to allocate vertex buffer memory!");
+    }
+
+    vkBindBufferMemory(device, buffer, buffer_memory, 0);
+}
+
+VkCommandBuffer Device::begin_single_time_commands(){
+    VkCommandBufferAllocateInfo allocation_info = {};
+    allocation_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocation_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocation_info.commandPool = command_pool;
+    allocation_info.commandBufferCount = 1;
+
+    VkCommandBuffer command_buffer;
+    vkAllocateCommandBuffers(device, &allocation_info, &command_buffer);
+
+    VkCommandBufferBeginInfo begin_info = {};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(command_buffer, &begin_info);
+    return command_buffer;
+}
+
+void Device::end_single_time_commands(VkCommandBuffer command_buffer){
+    vkEndCommandBuffer(command_buffer);
+
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &command_buffer;
+
+    vkQueueSubmit(gfx_queue, 1, &submit_info, VK_NULL_HANDLE);
+    vkQueueWaitIdle(gfx_queue);
+
+    vkFreeCommandBuffers(device, command_pool, 1, &command_buffer);
+}
+
+void Device::copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size){
+    VkCommandBuffer command_buffer = begin_single_time_commands();
+
+    VkBufferCopy copy_region{};
+    copy_region.srcOffset = 0;
+    copy_region.dstOffset = 0;
+    copy_region.size = size;
+    vkCmdCopyBuffer(command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+
+    end_single_time_commands(command_buffer);
+}
+
+void Device::copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layer_count){
+    VkCommandBuffer command_buffer = begin_single_time_commands();
+
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = layer_count;
+
+    region.imageOffset = {0, 0, 0};
+    region.imageExtent = {width, height, 1};
+
+    vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    end_single_time_commands(command_buffer);
+}
+
+void Device::create_image_with_info(const VkImageCreateInfo& image_info, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& image_memory){
+    if(vkCreateImage(device, &image_info, nullptr, &image) != VK_SUCCESS){
+        VK_ERROR("failed to create image");
+    }
+
+    VkMemoryRequirements mem_requirements;
+    vkGetImageMemoryRequirements(device, image, &mem_requirements);
+
+    VkMemoryAllocateInfo allocation_info = {};
+    allocation_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocation_info.allocationSize = mem_requirements.size;
+    allocation_info.memoryTypeIndex = find_memory_type(mem_requirements.memoryTypeBits, properties);
+
+    if(vkAllocateMemory(device, &allocation_info, nullptr, &image_memory) != VK_SUCCESS){
+        VK_ERROR("failed to allocate image memory");
+    }
+
+    if(vkBindImageMemory(device, image, image_memory, 0) != VK_SUCCESS){
+        VK_ERROR("failed to bind image memory");
+    }
+}
+
+void Device::create_command_pool(){
+    QueFamilyIndices qfi = find_physical_que_families();
+    
+    if (!~qfi){
+        VK_ERROR("failed to create command pool");
+    }
+
+    VkCommandPoolCreateInfo pool_info = {};
+    pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    pool_info.queueFamilyIndex = qfi.graphics_family.value();
+    pool_info.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+    if (vkCreateCommandPool(device, &pool_info, nullptr, &command_pool) != VK_SUCCESS) {
+        VK_ERROR("failed to create command pool");
+    }
+    VK_INFO("created command pool");
 }
 
 }
