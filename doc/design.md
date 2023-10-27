@@ -13,7 +13,8 @@ Below is our context diagram, which describes how elements within our system int
 
 *Figure 1: Context Diagram*
 
-### IMAGE HERE  
+![Context Diagram](../Diagrams/graphics_engine_diagram_labeled.png)
+
 
 ## Logical Design  
 
@@ -69,8 +70,7 @@ A diagram which describes the components of the graphics engine and their relati
 
 *Figure 2: Graphics Engine Diagram*
 
-### IMAGE HERE
-
+![Graphics Engine Diagram](../Diagrams/graphics_engine_diagram_labeled.png)
 
 #### Graphics Engine Components
 Below are brief descriptions of the components of our graphics engine and the function they perform.
