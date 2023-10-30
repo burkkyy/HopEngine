@@ -9,7 +9,9 @@ RUN yes | apt install \
     git \
     cmake \
     mingw-w64 \
-    wget
+    wget \
+    p7zip-full \
+    p7zip-rar
 
 # Download and Install GLFW
 RUN git clone https://github.com/glfw/glfw.git
@@ -20,10 +22,12 @@ RUN cd glfw && \
     make && \
     make install
 
+# Download and Install glm
+RUN wget https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.7z
+RUN 7z x glm-0.9.9.8.7z
+RUN cp -r glm/glm/ /usr/local/include/glm
+
 # Download and Install the vulkan sdk
-RUN yes | apt install \
-    p7zip-full \
-    p7zip-rar
 RUN wget https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe
 RUN 7z x -ovulkan-sdk vulkan-sdk.exe
 RUN cp -r vulkan-sdk/ /usr/local/include/vulkan
