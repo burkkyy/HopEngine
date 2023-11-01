@@ -1,16 +1,10 @@
-/*
- * This file is only for testing purposes.
- */
-#include <iostream>
-
 #include "Engine/engine.hpp"
 
-int main(int argc, char** argv) {
+int main(int argc, const char** argv){
     (void)argc;
     (void)argv;
 
-    bun::Engine hop;
-    hop.run();
+    hop::Engine eng;
 
     return 0;
 }

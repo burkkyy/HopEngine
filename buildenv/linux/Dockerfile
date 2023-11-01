@@ -14,6 +14,13 @@ RUN yes | apt install \
     libxxf86vm-dev \
     libxi-dev
 
+# Install the vulkan sdk
+RUN yes | apt install wget
+RUN wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | tee /etc/apt/trusted.gpg.d/lunarg.asc
+RUN wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
+RUN apt update
+RUN yes | apt install vulkan-sdk
+
 VOLUME /root/env
 WORKDIR /root/env
 
