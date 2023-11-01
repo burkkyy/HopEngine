@@ -6,7 +6,7 @@
 
 namespace hop {
 
-struct SimplePushConstantData {
+struct PushConstantData {
     glm::mat2 transform{1.f};
     glm::vec2 offset;
     alignas(16) glm::vec3 color;
@@ -27,7 +27,7 @@ void GameObjectRenderSystem::render_game_objects(VkCommandBuffer command_buffer,
     pipeline->bind(command_buffer);
 
     for(auto& obj : game_objects){
-        SimplePushConstantData push{};
+        PushConstantData push{};
         push.offset = obj.transform.translation;
         push.color = obj.color;
         push.transform = obj.transform.mat2();
@@ -37,7 +37,7 @@ void GameObjectRenderSystem::render_game_objects(VkCommandBuffer command_buffer,
             pipeline_layout,
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             0,
-            sizeof(SimplePushConstantData),
+            sizeof(PushConstantData),
             &push
         );
         obj.model->bind(command_buffer);
@@ -49,7 +49,7 @@ void GameObjectRenderSystem::create_pipline_layout(){
     VkPushConstantRange push_constant_range = {};
     push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     push_constant_range.offset = 0;
-    push_constant_range.size = sizeof(SimplePushConstantData);
+    push_constant_range.size = sizeof(PushConstantData);
 
     VkPipelineLayoutCreateInfo pipeline_layout_info{};
     pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -71,10 +71,17 @@ void GameObjectRenderSystem::create_pipeline(VkRenderPass render_pass){
     pipeline_config.renderPass = render_pass;
     pipeline_config.pipelineLayout = pipeline_layout;
     
+    #ifndef SHADER_VERT_PATH
+    #error "Please define the path of the vert shader spv in SHADER_VERT_PATH"
+    #endif
+    #ifndef SHADER_FRAG_PATH
+    #error "Please define the path of the frag shader spv in SHADER_VERT_PATH"
+    #endif
+    
     pipeline = std::make_unique<Pipeline>(
         device,
-        "shader.vert.spv",
-        "shader.frag.spv",
+        SHADER_VERT_PATH,
+        SHADER_FRAG_PATH,
         pipeline_config
     );
 }

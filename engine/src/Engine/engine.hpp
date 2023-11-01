@@ -28,6 +28,9 @@ public:
 
     void run();
 
+    void create_triangle();
+    void create_object(const std::vector<ObjectModel::Vertex>& vertices);
+
 private:
     void load_game_objects();
 

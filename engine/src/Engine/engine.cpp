@@ -13,14 +13,13 @@ namespace hop {
 
 Engine::Engine(){
     load_game_objects();
-    run();
 }
 
 Engine::~Engine(){
 }
 
 void Engine::run(){
-    std::shared_ptr<ObjectModel> squareModel = createSquareModel( device, {.5f, .0f});
+    std::shared_ptr<ObjectModel> squareModel = createSquareModel(device, {.5f, .0f});
     std::shared_ptr<ObjectModel> circleModel = createCircleModel(device, 64);
 
     // create physics objects
@@ -80,13 +79,14 @@ void Engine::run(){
 
     while(!window.should_close()){
         glfwPollEvents();
-        gravitySystem.update(physicsObjects, 1.f / 60, 5);
-        vecFieldSystem.update(gravitySystem, physicsObjects, vectorField);
+        //gravitySystem.update(physicsObjects, 1.f / 60, 5);
+        //vecFieldSystem.update(gravitySystem, physicsObjects, vectorField);
 
         if(auto command_buffer = renderer.begin_frame()){
             renderer.begin_swapchain_render_pass(command_buffer);
-            render_system.render_game_objects(command_buffer, physicsObjects);
-            render_system.render_game_objects(command_buffer, vectorField);
+            render_system.render_game_objects(command_buffer, game_objects);
+            //render_system.render_game_objects(command_buffer, physicsObjects);
+            //render_system.render_game_objects(command_buffer, vectorField);
             renderer.end_swapchain_render_pass(command_buffer);
             renderer.end_frame();
         }
@@ -94,7 +94,7 @@ void Engine::run(){
     vkDeviceWaitIdle(device.get_device());
 }
 
-void Engine::load_game_objects(){
+void Engine::create_triangle(){
     std::vector<ObjectModel::Vertex> vertices {
         {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
         {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -102,16 +102,22 @@ void Engine::load_game_objects(){
     };
 
     auto lveModel = std::make_shared<ObjectModel>(device, vertices);
-    
-    for(int i = 0; i < 3; i++){
-        auto triangle = GameObject::create_object();
-        triangle.model = lveModel;
-        triangle.color = {.1f, .1f, .1f};
-        triangle.transform.translation.x = get_rand();
-        triangle.transform.scale = {get_rand(), get_rand()};
-        triangle.transform.rotation = .25f * glm::two_pi<float>();
-        game_objects.push_back(std::move(triangle));
-    }
+    auto triangle = GameObject::create_object();
+    triangle.model = lveModel;
+    triangle.color = {.1f, .1f, .1f};
+    game_objects.push_back(std::move(triangle));
+}
+
+void Engine::create_object(const std::vector<ObjectModel::Vertex>& vertices){
+    auto model = std::make_shared<ObjectModel>(device, vertices);
+    auto object = GameObject::create_object();
+    object.model = model;
+    object.color = {1.f, .0f, .0f};
+    game_objects.push_back(std::move(object));
+}
+
+void Engine::load_game_objects(){
+
 
 }
 

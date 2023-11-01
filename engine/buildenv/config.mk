@@ -2,7 +2,7 @@
 # Read doc/buildenv/build.md for more
 
 ARCH = linux
-OUT = build/linux/bin/app.bin
+#OUT = build/linux/bin/app.bin
 CC = g++
 AR = ar
 CFLAGS = -std=c++17 -O2 -Wall -Wextra -I src/

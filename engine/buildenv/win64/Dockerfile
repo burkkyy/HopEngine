@@ -34,5 +34,3 @@ RUN cp -r vulkan-sdk/ /usr/local/include/vulkan
 
 VOLUME /root/env
 WORKDIR /root/env
-
-CMD ["make"]

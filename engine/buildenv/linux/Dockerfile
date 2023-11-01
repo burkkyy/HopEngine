@@ -23,5 +23,3 @@ RUN yes | apt install vulkan-sdk
 
 VOLUME /root/env
 WORKDIR /root/env
-
-CMD ["make"]
