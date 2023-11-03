@@ -70,18 +70,20 @@ void GameObjectRenderSystem::create_pipeline(VkRenderPass render_pass){
     Pipeline::default_config(pipeline_config);
     pipeline_config.renderPass = render_pass;
     pipeline_config.pipelineLayout = pipeline_layout;
-    
+    /*
     #ifndef SHADER_VERT_PATH
     #error "Please define the path of the vert shader spv in SHADER_VERT_PATH"
     #endif
     #ifndef SHADER_FRAG_PATH
     #error "Please define the path of the frag shader spv in SHADER_VERT_PATH"
     #endif
-    
+    */
     pipeline = std::make_unique<Pipeline>(
         device,
-        SHADER_VERT_PATH,
-        SHADER_FRAG_PATH,
+        //SHADER_VERT_PATH,
+        //SHADER_FRAG_PATH,
+        "shader.vert.spv",
+        "shader.frag.spv",
         pipeline_config
     );
 }

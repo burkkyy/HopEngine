@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -I ../../engine/src -L ../../engine/dist
-LDFLAGS = -lHopHopEngine -lglfw -lvulkan
+CFLAGS = -std=c++20 -O2 -Wall -Wextra -I ../../engine/src -L ../../engine/build/lib
+LDFLAGS = -lHopHopEngine -lvulkan -lglfw3 -ldl -lpthread
 
-triangle.bin: triangle.cpp
+a.bin: triangle.cpp
 	$(CC) $(CFLAGS) triangle.cpp $(LDFLAGS) -o $@
