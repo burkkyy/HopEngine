@@ -1,14 +1,12 @@
 __pycache__/
 build/
+*.old
 
 # Object/build files
 *.o
 *.out
+*.spv
 
 # Linux files
 *.a
 *.bin
-
-# Windows files
-*.lib
-*.exe

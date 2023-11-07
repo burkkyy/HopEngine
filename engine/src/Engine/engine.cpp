@@ -2,12 +2,6 @@
 
 #include "Utilities/status_print.hpp"
 #include "Render_Systems/object_render_system.hpp"
-#include "Render_Systems/physics.hpp"
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 namespace hop {
 
@@ -19,10 +13,10 @@ Engine::~Engine(){
 }
 
 void Engine::run(){
+/*
     std::shared_ptr<ObjectModel> squareModel = createSquareModel(device, {.5f, .0f});
     std::shared_ptr<ObjectModel> circleModel = createCircleModel(device, 64);
 
-    // create physics objects
     std::vector<GameObject> physicsObjects = {};
 
     auto red = GameObject::create_object();
@@ -49,12 +43,12 @@ void Engine::run(){
     white.model = circleModel;
     physicsObjects.push_back(std::move(white));
 
-    /*
+    
     r1(0) = -r3(0) = (-0.97000436, 0.24308753);
     r2(0) = (0,0);
     v1(0) = v3(0) = (0.4662036850, 0.4323657300); 
     v2(0) = (-0.93240737, -0.86473146)
-    */
+    
 
     // create vector field
     std::vector<GameObject> vectorField{};
@@ -74,8 +68,8 @@ void Engine::run(){
 
     GravityPhysicsSystem gravitySystem{0.81f};
     Vec2FieldSystem vecFieldSystem{};
-
-    GameObjectRenderSystem render_system{device, renderer.get_swapchain_render_pass()};
+*/
+    ObjectRenderSystem render_system{device, renderer.get_swapchain_render_pass()};
 
     while(!window.should_close()){
         glfwPollEvents();
@@ -84,7 +78,7 @@ void Engine::run(){
 
         if(auto command_buffer = renderer.begin_frame()){
             renderer.begin_swapchain_render_pass(command_buffer);
-            render_system.render_game_objects(command_buffer, game_objects);
+            render_system.render_objects(command_buffer, game_objects);
             //render_system.render_game_objects(command_buffer, physicsObjects);
             //render_system.render_game_objects(command_buffer, vectorField);
             renderer.end_swapchain_render_pass(command_buffer);
@@ -94,31 +88,15 @@ void Engine::run(){
     vkDeviceWaitIdle(device.get_device());
 }
 
-void Engine::create_triangle(){
-    std::vector<ObjectModel::Vertex> vertices {
-        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
-    };
-
-    auto lveModel = std::make_shared<ObjectModel>(device, vertices);
-    auto triangle = GameObject::create_object();
-    triangle.model = lveModel;
-    triangle.color = {.1f, .1f, .1f};
-    game_objects.push_back(std::move(triangle));
-}
-
-void Engine::create_object(const std::vector<ObjectModel::Vertex>& vertices){
+void Engine::add_object(const std::vector<ObjectModel::Vertex>& vertices, glm::vec3 color){
     auto model = std::make_shared<ObjectModel>(device, vertices);
-    auto object = GameObject::create_object();
+    Object object = {};
     object.model = model;
-    object.color = {1.f, .0f, .0f};
+    object.color = color;
     game_objects.push_back(std::move(object));
 }
 
 void Engine::load_game_objects(){
-
-
 }
 
 }
