@@ -1,32 +1,51 @@
 #include "hop.hpp"
 
-#include <vector>
+#include <iostream>
 
-class RotateSystem(){
-    void update(){
-        
+class MovePlugin : public hop::EnginePlugin {
+public:
+    void init(){
+
     }
+
+    void update(float delta_time){
+        for(auto obj : objects){
+            std::cout << obj->transform.translation.y << std::endl;
+            obj->transform.translation.y += 0.01f;
+        }
+    }
+
+    void close(){
+
+    }
+
+    std::vector<hop::GameObject> objects;    
 };
 
 int main(int argc, const char** argv){ 
     // Initialize the game engine
     hop::Engine engine;
 
-    // Create any objects defined in hop.hpp
-    hop::Quad square = hop::create_square(.25f, .25f, .5f, .5f);
+    // x, y, width, height, color
+    hop::GameObject square = engine.create_square(.25f, .25f, .5f, .5f, hop::RED);
     
-    hop::Triangle triangle = hop::create_triangle(
+    // x1, y1, x2, y2, x3, y3, color
+    hop::GameObject triangle = engine.create_triangle(
         1.0f, 1.0f, // vertex 1
         1.2f, 1.5f, // vertex 2
-        1.5f, 1.5f  // vertex 3
+        1.5f, 1.5f,  // vertex 3
+        hop::GREEN
     );
 
-    hop::Circle circle = hop::create_circle(1.6f, .4, .2f);
+    // x, y, radius, color
+    hop::GameObject circle = engine.create_circle(1.6f, .4, .2f, hop::WHITE);
 
-    // Add created objects to the engine with their color
-    engine.add_object(square, {1, 0, 0});
-    engine.add_object(triangle, {0, 1, 0});
-    engine.add_object(circle, {1, 1, 1});
+    // Create plugin
+    std::shared_ptr<MovePlugin> plugin = std::make_shared<MovePlugin>();
+    plugin->objects.push_back(square);
+
+    // Add the plugin to the engine
+    engine.add_plugin(plugin);
 
     engine.run();
 

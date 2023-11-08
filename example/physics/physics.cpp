@@ -1,101 +1,96 @@
-#pragma once
+#include "hop.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include <iostream>
 #include <vector>
 #include <memory>
 
-namespace hop {
+struct RigidBody {
+  hop::GameObject game_object;
+  glm::vec2 velocity;
+  float mass = 3.0f;
+};
 
-class GravityPhysicsSystem {
+class GravityPhysicsSystem : public hop::EnginePlugin {
  public:
   GravityPhysicsSystem(float strength) : strengthGravity{strength} {}
- 
+
   const float strengthGravity;
  
-  // dt stands for delta time, and specifies the amount of time to advance the simulation
-  // substeps is how many intervals to divide the forward time step in. More substeps result in a
-  // more stable simulation, but takes longer to compute
-  void update(std::vector<GameObject>& objs, float dt, unsigned int substeps = 1) {
-    const float stepDelta = dt / substeps;
-    for (int i = 0; i < substeps; i++) {
-      stepSimulation(objs, stepDelta);
+  void init(){
+
+  }
+
+  void update(float delta_time){
+    const float step_delta = delta_time / 5;
+    for (int i = 0; i < 5; i++) {
+      stepSimulation(step_delta);
     }
   }
+
+  void close(){
+
+  }
  
-  glm::vec2 computeForce(GameObject& fromObj, GameObject& toObj) const {
-    auto offset = fromObj.transform.translation - toObj.transform.translation;
+  glm::vec2 computeForce(RigidBody& fromObj, RigidBody& toObj) const {    
+    auto offset = fromObj.game_object->transform.translation - toObj.game_object->transform.translation;
     float distanceSquared = glm::dot(offset, offset);
- 
+    
     // clown town - just going to return 0 if objects are too close together...
     if (glm::abs(distanceSquared) < 1e-10f) {
       return {.0f, .0f};
     }
- 
-    float force =
-        strengthGravity * toObj.rigidBody2d.mass * fromObj.rigidBody2d.mass / distanceSquared;
+    
+    float force = strengthGravity * toObj.mass * fromObj.mass / distanceSquared;
     return force * offset / glm::sqrt(distanceSquared);
   }
+
+  std::vector<RigidBody> game_objects;
  
  private:
-  void stepSimulation(std::vector<GameObject>& physicsObjs, float dt) {
+  void stepSimulation(float dt) {
     // Loops through all pairs of objects and applies attractive force between them
-    for (auto iterA = physicsObjs.begin(); iterA != physicsObjs.end(); ++iterA) {
+    for (auto iterA = game_objects.begin(); iterA != game_objects.end(); ++iterA) {
       auto& objA = *iterA;
-      for (auto iterB = iterA; iterB != physicsObjs.end(); ++iterB) {
+      for (auto iterB = iterA; iterB != game_objects.end(); ++iterB) {
         if (iterA == iterB) continue;
         auto& objB = *iterB;
  
         auto force = computeForce(objA, objB);
-        objA.rigidBody2d.velocity += dt * -force / objA.rigidBody2d.mass;
-        objB.rigidBody2d.velocity += dt * force / objB.rigidBody2d.mass;
+        objA.velocity += dt * -force / objA.mass;
+        objB.velocity += dt * force / objB.mass;
       }
     }
  
     // update each objects position based on its final velocity
-    for (auto& obj : physicsObjs) {
-      obj.transform.translation += dt * obj.rigidBody2d.velocity;
+    for (auto& obj : game_objects) {
+      obj.game_object->transform.translation += dt * obj.velocity;
     }
   }
 };
 
-std::unique_ptr<ObjectModel> createSquareModel(Device& device, glm::vec2 offset) {
-  std::vector<ObjectModel::Vertex> vertices = {
-      {{-0.5f, -0.5f}},
-      {{0.5f, 0.5f}},
-      {{-0.5f, 0.5f}},
-      {{-0.5f, -0.5f}},
-      {{0.5f, -0.5f}},
-      {{0.5f, 0.5f}},  //
-  };
-  for (auto& v : vertices) {
-    v.position += offset;
-  }
-  return std::make_unique<ObjectModel>(device, vertices);
-}
-
-std::unique_ptr<ObjectModel> createCircleModel(Device& device, unsigned int numSides) {
-  std::vector<ObjectModel::Vertex> uniqueVertices{};
-  for (int i = 0; i < numSides; i++) {
-    float angle = i * glm::two_pi<float>() / numSides;
-    uniqueVertices.push_back({{glm::cos(angle), glm::sin(angle)}});
-  }
-  uniqueVertices.push_back({});  // adds center vertex at 0, 0
- 
-  std::vector<ObjectModel::Vertex> vertices{};
-  for (int i = 0; i < numSides; i++) {
-    vertices.push_back(uniqueVertices[i]);
-    vertices.push_back(uniqueVertices[(i + 1) % numSides]);
-    vertices.push_back(uniqueVertices[numSides]);
-  }
-  return std::make_unique<ObjectModel>(device, vertices);
-}
-
-}
-
 int main(){
+  hop::Engine engine;
+  std::shared_ptr<GravityPhysicsSystem> system = std::make_shared<GravityPhysicsSystem>(.081f);
+  
+  hop::GameObject circle_object_1 = engine.create_circle(-0.97000436f + 1.0f, 1.24308753f, .02f, {1,1,1});
+  RigidBody circle_1 = {circle_object_1, {0.4662036850f, 0.4323657300f}};
+  system->game_objects.push_back(circle_1);
+  
+  hop::GameObject circle_object_2 = engine.create_circle(1.97000436f, -0.24308753f + 1.0f, .02f, {0,0,1});
+  RigidBody circle_2 = {circle_object_2, {0.4662036850f, 0.4323657300f}};
+  system->game_objects.push_back(circle_2);
 
+  hop::GameObject circle_object_3 = engine.create_circle(1.0f, 1.0f, .02f, {1,0,0});
+  RigidBody circle_3 = {circle_object_3, {-0.93240737f, -0.86473146f}};
+  system->game_objects.push_back(circle_3);
+
+  engine.add_plugin(system);
+  
+  engine.run();
+  return 0;
 }

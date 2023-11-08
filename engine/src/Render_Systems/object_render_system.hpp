@@ -16,7 +16,7 @@ public:
     ObjectRenderSystem(const ObjectRenderSystem&) = delete;
     ObjectRenderSystem& operator=(const ObjectRenderSystem&) = delete;
 
-    void render_objects(VkCommandBuffer command_buffer, std::vector<Object>& objects);
+    void render_objects(VkCommandBuffer command_buffer, std::vector<std::shared_ptr<Object>>& objects);
 
 private:
     void create_pipline_layout();

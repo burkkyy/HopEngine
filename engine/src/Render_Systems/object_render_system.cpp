@@ -23,14 +23,14 @@ ObjectRenderSystem::~ObjectRenderSystem(){
 }
 
 
-void ObjectRenderSystem::render_objects(VkCommandBuffer command_buffer, std::vector<Object>& objects){
+void ObjectRenderSystem::render_objects(VkCommandBuffer command_buffer, std::vector<std::shared_ptr<Object>>& objects){
     pipeline->bind(command_buffer);
 
     for(auto& obj : objects){
         PushConstantData push{};
-        push.offset = obj.transform.translation - glm::vec2(1.0f);
-        push.color = obj.color;
-        push.transform = obj.transform.mat2();
+        push.offset = obj->transform.translation - glm::vec2(1.0f);
+        push.color = obj->color;
+        push.transform = obj->transform.mat2();
 
         vkCmdPushConstants(
             command_buffer,
@@ -40,8 +40,8 @@ void ObjectRenderSystem::render_objects(VkCommandBuffer command_buffer, std::vec
             sizeof(PushConstantData),
             &push
         );
-        obj.model->bind(command_buffer);
-        obj.model->draw(command_buffer);
+        obj->model->bind(command_buffer);
+        obj->model->draw(command_buffer);
     }
 }
 
