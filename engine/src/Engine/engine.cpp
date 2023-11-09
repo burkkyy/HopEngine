@@ -2,123 +2,110 @@
 
 #include "Utilities/status_print.hpp"
 #include "Render_Systems/object_render_system.hpp"
-#include "Render_Systems/physics.hpp"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <chrono>
 
 namespace hop {
 
-Engine::Engine(){
-    load_game_objects();
-}
+Engine::Engine(){ }
 
-Engine::~Engine(){
-}
+Engine::~Engine(){ }
 
 void Engine::run(){
-    std::shared_ptr<ObjectModel> squareModel = createSquareModel(device, {.5f, .0f});
-    std::shared_ptr<ObjectModel> circleModel = createCircleModel(device, 64);
+    ObjectRenderSystem render_system{device, renderer.get_swapchain_render_pass()};
 
-    // create physics objects
-    std::vector<GameObject> physicsObjects = {};
+    auto old_time = std::chrono::high_resolution_clock::now();
 
-    auto red = GameObject::create_object();
-    red.transform.scale = glm::vec2{.05f};
-    red.transform.translation = {-0.97000436f, 0.24308753f};
-    red.color = {1.f, 0.f, 0.f};
-    red.rigidBody2d.velocity = {0.4662036850f, 0.4323657300f};
-    red.model = circleModel;
-    physicsObjects.push_back(std::move(red));
-
-    auto blue = GameObject::create_object();
-    blue.transform.scale = glm::vec2{.05f};
-    blue.transform.translation = {0.97000436, -0.24308753};
-    blue.color = {0.f, 0.f, 1.f};
-    blue.rigidBody2d.velocity = {0.4662036850f, 0.4323657300f};
-    blue.model = circleModel;
-    physicsObjects.push_back(std::move(blue));
-
-    auto white = GameObject::create_object();
-    white.transform.scale = glm::vec2{.05f};
-    white.transform.translation = {.0f, .0f};
-    white.color = {1.f, 1.f, 1.f};
-    white.rigidBody2d.velocity = {-0.93240737f, -0.86473146f};
-    white.model = circleModel;
-    physicsObjects.push_back(std::move(white));
-
-    /*
-    r1(0) = -r3(0) = (-0.97000436, 0.24308753);
-    r2(0) = (0,0);
-    v1(0) = v3(0) = (0.4662036850, 0.4323657300); 
-    v2(0) = (-0.93240737, -0.86473146)
-    */
-
-    // create vector field
-    std::vector<GameObject> vectorField{};
-    int gridCount = 40;
-    for (int i = 0; i < gridCount; i++) {
-        for (int j = 0; j < gridCount; j++) {
-            auto vf = GameObject::create_object();
-            vf.transform.scale = glm::vec2(0.005f);
-            vf.transform.translation = {
-                -1.0f + (i + 0.5f) * 2.0f / gridCount,
-                -1.0f + (j + 0.5f) * 2.0f / gridCount};
-            vf.color = glm::vec3(1.0f);
-            vf.model = squareModel;
-            vectorField.push_back(std::move(vf));
-        }
+    for(auto plugin : plugins){
+        plugin->init();
     }
-
-    GravityPhysicsSystem gravitySystem{0.81f};
-    Vec2FieldSystem vecFieldSystem{};
-
-    GameObjectRenderSystem render_system{device, renderer.get_swapchain_render_pass()};
 
     while(!window.should_close()){
         glfwPollEvents();
-        //gravitySystem.update(physicsObjects, 1.f / 60, 5);
-        //vecFieldSystem.update(gravitySystem, physicsObjects, vectorField);
 
         if(auto command_buffer = renderer.begin_frame()){
             renderer.begin_swapchain_render_pass(command_buffer);
-            render_system.render_game_objects(command_buffer, game_objects);
-            //render_system.render_game_objects(command_buffer, physicsObjects);
-            //render_system.render_game_objects(command_buffer, vectorField);
+            render_system.render_objects(command_buffer, objects);
             renderer.end_swapchain_render_pass(command_buffer);
             renderer.end_frame();
         }
+
+        auto new_time = std::chrono::high_resolution_clock::now();
+        float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - old_time).count();
+        old_time = new_time;
+
+        for(auto plugin : plugins){
+            plugin->update(delta_time);
+        }
     }
     vkDeviceWaitIdle(device.get_device());
+
+    for(auto plugin : plugins){
+        plugin->close();
+    }
 }
 
-void Engine::create_triangle(){
-    std::vector<ObjectModel::Vertex> vertices {
-        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+std::shared_ptr<Object> Engine::create_object(const std::vector<Vertex>& vertices, const glm::vec2& translation, const glm::vec3& color){
+    auto model = std::make_shared<ObjectModel>(device, vertices);
+    std::shared_ptr<Object> object = std::make_shared<Object>();
+    object->model = model;
+    object->color = color;
+    object->transform.translation = translation;
+    objects.push_back(object);
+    return object;
+}
+
+std::shared_ptr<Square> Engine::create_square(float x, float y, float width, float height, Color color){
+    std::vector<Vertex> vertices = {
+        {{0, 0}},
+        {{width, 0}},
+        {{width, height}},
+        {{0, 0}},
+        {{0, height}},
+        {{width, height}}
     };
 
-    auto lveModel = std::make_shared<ObjectModel>(device, vertices);
-    auto triangle = GameObject::create_object();
-    triangle.model = lveModel;
-    triangle.color = {.1f, .1f, .1f};
-    game_objects.push_back(std::move(triangle));
+    auto square = std::make_shared<Square>();
+    square->set_object(create_object(vertices, {x, y}, color));
+    square->width = width;
+    square->height = height;
+    return square;
 }
 
-void Engine::create_object(const std::vector<ObjectModel::Vertex>& vertices){
-    auto model = std::make_shared<ObjectModel>(device, vertices);
-    auto object = GameObject::create_object();
-    object.model = model;
-    object.color = {1.f, .0f, .0f};
-    game_objects.push_back(std::move(object));
+std::shared_ptr<GameObject> Engine::create_triangle(Vertex v1, Vertex v2, Vertex v3, Color color){
+    std::vector<Vertex> vertices = {{v1}, {v2}, {v3}};
+
+    auto game_object = std::make_shared<GameObject>();
+    game_object->set_object(create_object(vertices, {0, 0}, color));
+
+    return game_object;
 }
 
-void Engine::load_game_objects(){
+std::shared_ptr<Circle> Engine::create_circle(float x, float y, float radius, Color color){
+    int sides = std::max(static_cast<int>(radius * 100.0f), 8);
+    std::vector<Vertex> side_vertices = {};
 
+    for(int i = 0; i < sides; i++){
+        float theta = glm::two_pi<float>() * i / sides;
+        float x1 = radius * glm::cos(theta);
+        float y1 = radius * glm::sin(theta);
+        side_vertices.push_back({{x1, y1}});
+    }
 
+    side_vertices.push_back({{0, 0}});
+
+    std::vector<Vertex> vertices{};
+    for(int i = 0; i < sides; i++){
+        vertices.push_back(side_vertices[i]);
+        vertices.push_back(side_vertices[(i + 1) % sides]);
+        vertices.push_back(side_vertices[sides]);
+    }
+    
+    auto circle = std::make_shared<Circle>();
+    circle->set_object(create_object(vertices, {x, y}, color));
+    circle->radius = radius;
+    
+    return circle;
 }
 
 }
