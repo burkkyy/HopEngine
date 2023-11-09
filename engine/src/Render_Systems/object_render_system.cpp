@@ -12,25 +12,24 @@ struct PushConstantData {
     alignas(16) glm::vec3 color;
 };
 
-GameObjectRenderSystem::GameObjectRenderSystem(Device& device, VkRenderPass render_pass) : device{device} {
+ObjectRenderSystem::ObjectRenderSystem(Device& device, VkRenderPass render_pass) : device{device} {
     create_pipline_layout();
     create_pipeline(render_pass);
 }
 
-GameObjectRenderSystem::~GameObjectRenderSystem(){
+ObjectRenderSystem::~ObjectRenderSystem(){
     vkDestroyPipelineLayout(device.get_device(), pipeline_layout, nullptr);
     VK_INFO("destroyed pipeline layout");
 }
 
-
-void GameObjectRenderSystem::render_game_objects(VkCommandBuffer command_buffer, std::vector<GameObject>& game_objects){
+void ObjectRenderSystem::render_objects(VkCommandBuffer command_buffer, std::vector<std::shared_ptr<Object>>& objects){
     pipeline->bind(command_buffer);
 
-    for(auto& obj : game_objects){
+    for(auto& obj : objects){
         PushConstantData push{};
-        push.offset = obj.transform.translation;
-        push.color = obj.color;
-        push.transform = obj.transform.mat2();
+        push.offset = obj->transform.translation - glm::vec2(1.0f);
+        push.color = obj->color;
+        push.transform = obj->transform.mat2();
 
         vkCmdPushConstants(
             command_buffer,
@@ -40,12 +39,12 @@ void GameObjectRenderSystem::render_game_objects(VkCommandBuffer command_buffer,
             sizeof(PushConstantData),
             &push
         );
-        obj.model->bind(command_buffer);
-        obj.model->draw(command_buffer);
+        obj->model->bind(command_buffer);
+        obj->model->draw(command_buffer);
     }
 }
 
-void GameObjectRenderSystem::create_pipline_layout(){
+void ObjectRenderSystem::create_pipline_layout(){
     VkPushConstantRange push_constant_range = {};
     push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     push_constant_range.offset = 0;
@@ -63,7 +62,7 @@ void GameObjectRenderSystem::create_pipline_layout(){
     }
 }
 
-void GameObjectRenderSystem::create_pipeline(VkRenderPass render_pass){
+void ObjectRenderSystem::create_pipeline(VkRenderPass render_pass){
     assert(pipeline_layout != nullptr);
     
     PipelineConfigInfo pipeline_config = {};

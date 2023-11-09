@@ -12,6 +12,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     VkDebugUtilsMessageTypeFlagsEXT m_type,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallback_data,
     void* pUser_data){
+        (void)m_type;
+        (void)pCallback_data;
+        (void)pUser_data;
         if(m_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT){
             ERROR("VALIDATION LAYER", pCallback_data->pMessage);
         } else if(m_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT){
@@ -211,11 +214,17 @@ std::vector<const char*> Device::get_required_extensions(){
     VK_INFO("number of available extensions: " << available_extension_c);
     
     VK_INFO("available extensions:");
-    for(const auto& e : available_extensions){ P('\t' << e.extensionName << '\n'); }
+#ifndef NDEBUG
+    for(const auto& e : available_extensions){
+        P('\t' << e.extensionName << '\n');
+    }
 
     P("required extensions:\n");
-    for(const auto& e : extensions){ P('\t' << e << '\n'); }
-    
+    for(const auto& e : extensions){
+        P('\t' << e << '\n');
+    }
+#endif
+
     return extensions;
 }
 
@@ -304,7 +313,7 @@ QueFamilyIndices Device::find_que_families(VkPhysicalDevice device){
     std::vector<VkQueueFamilyProperties> que_families(count);
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, que_families.data());
 
-    for(int i = 0; i < count; i++){
+    for(size_t i = 0; i < count; i++){
         /* Check to see if one of the queue families support VK_QUEUE_GRAPHICS_BIT */
         if(que_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT){
             indices.graphics_family = i;
