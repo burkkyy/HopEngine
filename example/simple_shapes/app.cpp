@@ -1,52 +1,39 @@
 #include "hop.hpp"
 
-#include <iostream>
+int main(int argc, const char** argv){
+    // Avoids -Wunused-parameter warning
+    (void)argc;
+    (void)argv;
 
-class MovePlugin : public hop::EnginePlugin {
-public:
-    void init(){
-
-    }
-
-    void update(float delta_time){
-        for(auto obj : objects){
-            std::cout << obj->transform.translation.y << std::endl;
-            obj->transform.translation.y += 0.01f;
-        }
-    }
-
-    void close(){
-
-    }
-
-    std::vector<hop::GameObject> objects;    
-};
-
-int main(int argc, const char** argv){ 
     // Initialize the game engine
     hop::Engine engine;
 
-    // x, y, width, height, color
-    hop::GameObject square = engine.create_square(.25f, .25f, .5f, .5f, hop::RED);
-    
-    // x1, y1, x2, y2, x3, y3, color
-    hop::GameObject triangle = engine.create_triangle(
-        1.0f, 1.0f, // vertex 1
-        1.2f, 1.5f, // vertex 2
-        1.5f, 1.5f,  // vertex 3
-        hop::GREEN
+    // Creating a square
+    std::shared_ptr<hop::Square> square = engine.create_square(
+        0.25f,       // x
+        0.25f,       // y
+        0.5f,        // width
+        0.5f,        // height
+        hop::RED    // color
     );
 
-    // x, y, radius, color
-    hop::GameObject circle = engine.create_circle(1.6f, .4, .2f, hop::WHITE);
+    // Creating a triangle
+    std::shared_ptr<hop::GameObject> triangle = engine.create_triangle(
+        {{1.0f, 1.0f}}, // vertex 1
+        {{1.2f, 1.5f}}, // vertex 2
+        {{1.5f, 1.5f}}, // vertex 3
+        hop::GREEN      // color
+    );
 
-    // Create plugin
-    std::shared_ptr<MovePlugin> plugin = std::make_shared<MovePlugin>();
-    plugin->objects.push_back(square);
+    // Creating a circle
+    std::shared_ptr<hop::Circle> circle = engine.create_circle(
+        1.6f,       // x
+        0.4,        // y
+        0.2f,       // radius
+        hop::WHITE  // color
+    );
 
-    // Add the plugin to the engine
-    engine.add_plugin(plugin);
-
+    // Start the engine loop
     engine.run();
 
     return 0;

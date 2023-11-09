@@ -22,7 +22,6 @@ ObjectRenderSystem::~ObjectRenderSystem(){
     VK_INFO("destroyed pipeline layout");
 }
 
-
 void ObjectRenderSystem::render_objects(VkCommandBuffer command_buffer, std::vector<std::shared_ptr<Object>>& objects){
     pipeline->bind(command_buffer);
 

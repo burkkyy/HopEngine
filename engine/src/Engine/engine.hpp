@@ -16,32 +16,70 @@
 #include <glm/gtc/constants.hpp>
 
 #include <memory>
+#include <optional>
 
 namespace hop {
 
-struct Color {
-    float r = 0.0f;
-    float g = 0.0f;
-    float b = 0.0f;
-};
+using Vertex = ObjectModel::Vertex;
+using Color = glm::vec3;
 
-struct GameObject {
-    float x = 0.0f;
-    float y = 0.0f;
-    float width = 0.0f;
-    float height = 0.0f;
+class Engine;
 
+/* @brief Wrapper class for Object class
+ *
+ *  Wrapper for Object class for better ease of use
+ *
+ */
+class GameObject {
+public:
+    glm::vec2 position(){
+        return object->transform.translation;
+    }
+
+    void move(float x, float y){
+        object->transform.translation.x += x;
+        object->transform.translation.y += y;
+    }
+
+    void set_object(std::shared_ptr<Object>&& obj){
+        object.reset();
+        object = obj;
+    }
+
+    void set_color(const Color& new_color){
+        color = new_color;
+    }
+
+private:
     Color color;
-
     std::shared_ptr<Object> object;
 };
 
+
+class Square : public GameObject {
+public:
+    float width = 0.0f;
+    float height = 0.0f;
+};
+
+
+class Circle : public GameObject {
+public:
+    float radius = 0.0f;
+};
+
+
 class EnginePlugin {
 public:
+    EnginePlugin(Engine& _engine) : engine{_engine} {}
+
     virtual void init() = 0;
     virtual void update(float delta_time) = 0;
     virtual void close() = 0;
+
+    Engine& engine;
 };
+
 
 class Engine {
 public:
@@ -57,21 +95,17 @@ public:
 
     void run();
     
-    std::shared_ptr<GameObject> create_object(const std::vector<ObjectModel::Vertex>& vertices, glm::vec2& translation, Color color);
+    std::shared_ptr<Object> create_object(const std::vector<ObjectModel::Vertex>& vertices, const glm::vec2& translation, const glm::vec3& color);
     
-    std::shared_ptr<GameObject> create_square(float x, float y, float width, float height, Color color);
-    std::shared_ptr<GameObject> create_triangle(
-        float x1,
-        float y1,
-        float x2,
-        float y2,
-        float x3,
-        float y3,
-        Color color
-    );
-    std::shared_ptr<GameObject> create_circle(float x, float y, float radius, Color color);
-    
-    void add_plugin(std::shared_ptr<EnginePlugin>&& plugin);
+    template<typename P>
+    void plugin(){
+        std::shared_ptr<P> plug = std::make_shared<P>(*this);
+        plugins.push_back(std::move(plug));
+    }
+
+    std::shared_ptr<Square> create_square(float x, float y, float width, float height, Color color);
+    std::shared_ptr<GameObject> create_triangle(Vertex v1, Vertex v2, Vertex v3, Color color);
+    std::shared_ptr<Circle> create_circle(float x, float y, float radius, Color color);
 
 private:
     Window window{WIDTH, HEIGHT};

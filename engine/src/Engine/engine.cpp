@@ -7,22 +7,18 @@
 
 namespace hop {
 
-Engine::Engine(){
-    for(auto plugin : plugins){
-        plugin->init();
-    }
-}
+Engine::Engine(){ }
 
-Engine::~Engine(){
-    for(auto plugin : plugins){
-        plugin->close();
-    }
-}
+Engine::~Engine(){ }
 
 void Engine::run(){
     ObjectRenderSystem render_system{device, renderer.get_swapchain_render_pass()};
 
     auto old_time = std::chrono::high_resolution_clock::now();
+
+    for(auto plugin : plugins){
+        plugin->init();
+    }
 
     while(!window.should_close()){
         glfwPollEvents();
@@ -37,25 +33,30 @@ void Engine::run(){
         auto new_time = std::chrono::high_resolution_clock::now();
         float delta_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - old_time).count();
         old_time = new_time;
+
         for(auto plugin : plugins){
             plugin->update(delta_time);
         }
     }
     vkDeviceWaitIdle(device.get_device());
+
+    for(auto plugin : plugins){
+        plugin->close();
+    }
 }
 
-std::shared_ptr<Object> Engine::create_object(const std::vector<ObjectModel::Vertex>& vertices, glm::vec2& translation, Color color){
+std::shared_ptr<Object> Engine::create_object(const std::vector<Vertex>& vertices, const glm::vec2& translation, const glm::vec3& color){
     auto model = std::make_shared<ObjectModel>(device, vertices);
     std::shared_ptr<Object> object = std::make_shared<Object>();
     object->model = model;
-    object->color = {color.r, color.g, color.b};
+    object->color = color;
     object->transform.translation = translation;
     objects.push_back(object);
     return object;
 }
 
-std::shared_ptr<Object> Engine::create_square(float x, float y, float width, float height, Color color){
-    std::vector<ObjectModel::Vertex> vertices = {
+std::shared_ptr<Square> Engine::create_square(float x, float y, float width, float height, Color color){
+    std::vector<Vertex> vertices = {
         {{0, 0}},
         {{width, 0}},
         {{width, height}},
@@ -64,34 +65,25 @@ std::shared_ptr<Object> Engine::create_square(float x, float y, float width, flo
         {{width, height}}
     };
 
-    glm::vec2 translation = {x, y};
-
-    return create_object(vertices, translation, color);
+    auto square = std::make_shared<Square>();
+    square->set_object(create_object(vertices, {x, y}, color));
+    square->width = width;
+    square->height = height;
+    return square;
 }
 
-std::shared_ptr<Object> Engine::create_triangle(
-    float x1,
-    float y1,
-    float x2,
-    float y2,
-    float x3,
-    float y3,
-    Color color
-){
-    std::vector<ObjectModel::Vertex> vertices = {
-        {{x1, y1}},
-        {{x2, y2}},
-        {{x3, y3}},
-    };
+std::shared_ptr<GameObject> Engine::create_triangle(Vertex v1, Vertex v2, Vertex v3, Color color){
+    std::vector<Vertex> vertices = {{v1}, {v2}, {v3}};
 
-    glm::vec2 translation = {0, 0};
+    auto game_object = std::make_shared<GameObject>();
+    game_object->set_object(create_object(vertices, {0, 0}, color));
 
-    return create_object(vertices, translation, color);
+    return game_object;
 }
 
-std::shared_ptr<Object> Engine::create_circle(float x, float y, float radius, Color color){
+std::shared_ptr<Circle> Engine::create_circle(float x, float y, float radius, Color color){
     int sides = std::max(static_cast<int>(radius * 100.0f), 8);
-    std::vector<ObjectModel::Vertex> side_vertices = {};
+    std::vector<Vertex> side_vertices = {};
 
     for(int i = 0; i < sides; i++){
         float theta = glm::two_pi<float>() * i / sides;
@@ -102,20 +94,18 @@ std::shared_ptr<Object> Engine::create_circle(float x, float y, float radius, Co
 
     side_vertices.push_back({{0, 0}});
 
-    std::vector<ObjectModel::Vertex> vertices{};
+    std::vector<Vertex> vertices{};
     for(int i = 0; i < sides; i++){
         vertices.push_back(side_vertices[i]);
         vertices.push_back(side_vertices[(i + 1) % sides]);
         vertices.push_back(side_vertices[sides]);
     }
-
-    glm::vec2 translation = {x, y};
-
-    return create_object(vertices, translation, color);
-}
-
-void Engine::add_plugin(std::shared_ptr<EnginePlugin>&& plugin){
-    plugins.push_back(std::move(plugin));
+    
+    auto circle = std::make_shared<Circle>();
+    circle->set_object(create_object(vertices, {x, y}, color));
+    circle->radius = radius;
+    
+    return circle;
 }
 
 }
