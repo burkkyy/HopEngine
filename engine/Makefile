@@ -1,4 +1,4 @@
-include buildenv/config.mk
+include config.mk
 
 # NOTE: The following variables must be defined in a seperate config.mk file:
 # 	$(CC) 		- The compilier to be used

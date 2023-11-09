@@ -27,7 +27,7 @@ SwapChain::~SwapChain(){
         VK_INFO("destroyed swapchain");
     }
 
-    for (int i = 0; i < depth_images.size(); i++) {
+    for (size_t i = 0; i < depth_images.size(); i++) {
         vkDestroyImageView(device.get_device(), depth_image_views[i], nullptr);
         vkDestroyImage(device.get_device(), depth_images[i], nullptr);
         vkFreeMemory(device.get_device(), depth_image_memorys[i], nullptr);
@@ -339,7 +339,7 @@ void SwapChain::create_depth_resources(){
     depth_image_memorys.resize(image_count());
     depth_image_views.resize(image_count());
 
-    for (int i = 0; i < depth_images.size(); i++) {
+    for (size_t i = 0; i < depth_images.size(); i++) {
         VkImageCreateInfo image_info = {};
         image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         image_info.imageType = VK_IMAGE_TYPE_2D;
@@ -382,7 +382,6 @@ void SwapChain::create_framebuffers(){
     for(size_t i = 0; i < image_count(); i++){
         std::array<VkImageView, 2> attachments = {swapchain_image_views[i], depth_image_views[i]};
 
-        VkExtent2D swapChainExtent = get_swapchain_extent();
         VkFramebufferCreateInfo framebuffer_info = {};
         framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebuffer_info.renderPass = render_pass;

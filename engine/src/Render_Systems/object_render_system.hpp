@@ -1,28 +1,22 @@
-/* @author Caleb Burke
- * @date 2023-10-5
- * NOTE: Finish writing doc
- * Main api for graphics engine
-*/
-
 #pragma once
 
 #include "Device/device.hpp"
 #include "Pipeline/pipeline.hpp"
-#include "Objects/game_object.hpp"
+#include "Objects/object.hpp"
 
 #include <memory>
 
 namespace hop {
 
-class GameObjectRenderSystem {
+class ObjectRenderSystem {
 public:
-    GameObjectRenderSystem(Device& device, VkRenderPass render_pass);
-    ~GameObjectRenderSystem();
+    ObjectRenderSystem(Device& device, VkRenderPass render_pass);
+    ~ObjectRenderSystem();
 
-    GameObjectRenderSystem(const GameObjectRenderSystem&) = delete;
-    GameObjectRenderSystem& operator=(const GameObjectRenderSystem&) = delete;
+    ObjectRenderSystem(const ObjectRenderSystem&) = delete;
+    ObjectRenderSystem& operator=(const ObjectRenderSystem&) = delete;
 
-    void render_game_objects(VkCommandBuffer command_buffer, std::vector<GameObject>& game_objects);
+    void render_objects(VkCommandBuffer command_buffer, std::vector<std::shared_ptr<Object>>& objects);
 
 private:
     void create_pipline_layout();

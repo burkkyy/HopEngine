@@ -15,16 +15,14 @@ namespace hop {
 class ObjectModel {
 public:
     struct Vertex {
-        glm::vec2 position{};
-        glm::vec3 color{};
-        glm::vec3 normal{};
-        glm::vec2 uv{};
+        glm::vec2 position = {};
+        glm::vec3 color = {};
 
         static std::vector<VkVertexInputBindingDescription> get_binding_descriptions();
         static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
 
         bool operator==(const Vertex& v) const {
-            return position == v.position && color == v.color && normal == v.color && uv == v.uv;
+            return position == v.position && color == v.color;
         }
     };
 
