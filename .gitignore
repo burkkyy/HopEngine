@@ -14,3 +14,4 @@ build/
 # Other misc files
 *.old
 .DS_Store
+._.DS_Store
