@@ -1,18 +1,18 @@
 #include "pipeline.hpp"
 
 #include "Utilities/status_print.hpp"
-#include "Objects/object_model.hpp"
+#include "Objects/object.hpp"
 
 #include <fstream>
 
 namespace hop {
 
 Pipeline::Pipeline(
-    Device& d,
+    Device& device,
     const std::string& vert_filepath,
     const std::string& frag_filepath,
     const PipelineConfigInfo& config_info
-) : device{d} {
+) : device{device} {
     create_shader_module(vert_filepath, &vert);
     create_shader_module(frag_filepath, &frag);
     create_graphics_pipeline(config_info);
