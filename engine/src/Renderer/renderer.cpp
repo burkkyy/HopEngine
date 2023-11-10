@@ -63,7 +63,7 @@ void Renderer::begin_swapchain_render_pass(VkCommandBuffer command_buffer){
     assert(is_frame_started);
     assert(command_buffer == get_current_command_buffer());
 
-    VkRenderPassBeginInfo render_pass_info{};
+    VkRenderPassBeginInfo render_pass_info = {};
     render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     render_pass_info.renderPass = swapchain->get_render_pass();
     render_pass_info.framebuffer = swapchain->get_frame_buffer(current_image_index);
@@ -87,7 +87,9 @@ void Renderer::begin_swapchain_render_pass(VkCommandBuffer command_buffer){
     viewport.height = static_cast<float>(swapchain->get_swapchain_extent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
+
     VkRect2D scissor{{0, 0}, swapchain->get_swapchain_extent()};
+
     vkCmdSetViewport(command_buffer, 0, 1, &viewport);
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 }

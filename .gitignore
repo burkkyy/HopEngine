@@ -1,6 +1,6 @@
 __pycache__/
 build/
-*.old
+.vscode/
 
 # Object/build files
 *.o
@@ -10,3 +10,8 @@ build/
 # Linux files
 *.a
 *.bin
+
+# Other misc files
+*.old
+.DS_Store
+._.DS_Store
