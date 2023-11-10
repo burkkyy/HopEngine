@@ -284,7 +284,7 @@ bool Device::is_device_suitable(VkPhysicalDevice device){
         sc = !support.formats.empty() && !support.present_modes.empty();
     }
 
-    return ~indices && extensions_support && sc && device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && device_features.geometryShader;
+    return ~indices && extensions_support && sc;
 }
 
 bool Device::check_device_extension_support(VkPhysicalDevice device){
