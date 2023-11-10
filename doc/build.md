@@ -12,4 +12,10 @@ To build HopHopEngine, you have to run build.py.
 > Ex.\
 > `python build.py`
 
-The build script will create the build environment for you and handle all of the compiliation process. All files created during compiliation are dumped in `build/`.
+The build script will create the build environment for you and handle all of the compiliation process. All files created during compiliation are dumped in `engine/build/`.
+
+## Build script options
+
+`python build.py` will only build the library.
+To make the examples: `python build.py examples`.
+To make the demos: `python build.py demos`.

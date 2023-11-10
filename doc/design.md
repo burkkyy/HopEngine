@@ -48,7 +48,7 @@ For details on the Hop Engine's technical specifications it is recommended to mo
 
 ###### Context Diagram
 
-![High Level Context Diagram of the Hop Engine](../Diagrams/graphics_engine_diagram_labeled.png)
+![High Level Context Diagram of the Hop Engine](diagrams/graphics_engine_diagram_labeled.png)
 
 *Figure 1: Context Diagram*
 
@@ -114,7 +114,7 @@ A diagram which describes the components of the graphics engine and their relati
 
 ###### Graphics Engine Diagram
 
-![Diagram for the Graphics Engine Subsystem of the Hop Engine](../Diagrams/graphics_engine_diagram_labeled.png)
+![Diagram for the Graphics Engine Subsystem of the Hop Engine](diagrams/graphics_engine_diagram_labeled.png)
 
 *Figure 2: Graphics Engine Diagram*
 

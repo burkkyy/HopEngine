@@ -2,13 +2,13 @@
 
 Welcome to our simple game engine
 
-## How to build
-To build the engine simply run:
+## Building
+To build the engine run:
 ```bash
 python build.py
 ```
 
-See `doc/buildenv/build.md` for more info
+See `doc/build.md` for more info on dependencies.
 
 ## Contributors
 * Azita
