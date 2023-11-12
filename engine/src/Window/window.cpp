@@ -33,4 +33,8 @@ void Window::framebuffer_resize_callback(GLFWwindow* window, int width, int heig
     _win->height = height;
 }
 
+GLFWwindow* Window::get_window(){
+    return win;
+}
+
 }

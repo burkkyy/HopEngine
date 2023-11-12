@@ -1,13 +1,3 @@
-/**
- * @file swapchain.hpp
- * @author Caleb Burke
- * @date Nov 5, 2023
- *
- * Classes here are critical for creating frames, drawing frames, 
- * presenting frames and destroying frames.
- *
- */
-
 #pragma once
 
 #include "Device/device.hpp"
@@ -19,156 +9,41 @@
 
 namespace hop {
 
-/**
- * @brief Swapchain for game engine
- *
- * This class is the swapchain for the game engine. This means that this class
- * keeps track of what image is being presented and which can be rendered to.
- *
- * NOTE: Depends on a device to be created
- */
 class SwapChain {
 public:
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-    /**
-     * @brief Constructor
-     *
-     * A
-     *
-     * @param device
-     * @param extent
-     */
     SwapChain(Device& d, VkExtent2D e);
-    
-    /**
-     * @brief Constructor
-     *
-     * A
-     *
-     * @param device
-     * @param extent
-     * @param prev
-     */
     SwapChain(Device& d, VkExtent2D e, std::shared_ptr<SwapChain> prev);
-    
-    /**
-     * @brief Default Deconstructor
-     *
-     * A
-     *
-     */
     ~SwapChain();
 
-    // Prevents copying of this object
     SwapChain(const SwapChain&) = delete;
     SwapChain& operator=(const SwapChain&) = delete;
 
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkFramebuffer get_frame_buffer(int index) { return swapchain_framebuffers[index]; }
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkRenderPass get_render_pass() { return render_pass; }
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkImageView get_image_view(int index) { return swapchain_image_views[index]; }
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkFormat get_swapchain_image_format() { return swapchain_image_format; }
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkExtent2D get_swapchain_extent() { return swapchain_extent; }
 
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     size_t image_count() { return swapchain_images.size(); }
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
+    uint32_t height(){ return swapchain_extent.height; };
+    uint32_t width(){ return swapchain_extent.width; };
+
+    float extent_aspect_ratio() {
+        return static_cast<float>(swapchain_extent.width) / static_cast<float>(swapchain_extent.height);
+    }
+
     VkFormat find_depth_format();
 
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkResult acquire_next_image(uint32_t* image_index);
-    
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     VkResult submit_command_buffers(const VkCommandBuffer* buffers, uint32_t* image_index);
 
-    /**
-     * @brief
-     *
-     * A
-     *
-     * @return
-     */
     bool compare_swap_formats(const SwapChain& swapchain) const {
         return swapchain.swapchain_depth_format == swapchain_depth_format && swapchain.swapchain_image_format == swapchain_image_format;
     }
 
 private:
-    VkSurfaceFormatKHR choose_swap_surface_format(const std::vector<VkSurfaceFormatKHR>&);
-    VkPresentModeKHR choose_swap_present_mode(const std::vector<VkPresentModeKHR>&);
-    VkExtent2D choose_swap_extent(const VkSurfaceCapabilitiesKHR&);
-
-    void init();
-    void create_swap_chain();
-    void create_image_views();
-    void create_render_pass();
-    void create_depth_resources();
-    void create_framebuffers();
-    void create_sync_objects();
-
     Device& device;
     VkExtent2D window_extent;
 
@@ -192,6 +67,19 @@ private:
     std::vector<VkFence> in_flight_fences;
     std::vector<VkFence> images_in_flight;
     size_t current_frame = 0;
+
+    /* Functions for creating swapchain */
+    VkSurfaceFormatKHR choose_swap_surface_format(const std::vector<VkSurfaceFormatKHR>&);
+    VkPresentModeKHR choose_swap_present_mode(const std::vector<VkPresentModeKHR>&);
+    VkExtent2D choose_swap_extent(const VkSurfaceCapabilitiesKHR&);
+
+    void init();
+    void create_swap_chain();
+    void create_image_views();
+    void create_render_pass();
+    void create_depth_resources();
+    void create_framebuffers();
+    void create_sync_objects();
 };
 
 }

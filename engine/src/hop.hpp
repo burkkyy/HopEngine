@@ -1,13 +1,3 @@
-/**
- * @file hop.cpp
- * @author Caleb Burke
- * @date Nov 5, 2023
- *
- * Main header file users of library will use.
- * Other helper functions and constants defined here.
- *
- */
-
 #pragma once
 
 #include "Engine/engine.hpp"
@@ -21,7 +11,6 @@
 
 namespace hop {
 
-// Colors objects can be set to
 #define RED Color{1.0f, 0.0f, 0.0f}
 #define GREEN Color{0.0f, 1.0f, 0.0f}
 #define BLUE Color{0.0f, 0.0f, 1.0f}

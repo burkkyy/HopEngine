@@ -108,4 +108,9 @@ std::shared_ptr<Circle> Engine::create_circle(float x, float y, float radius, Co
     return circle;
 }
 
+GLFWwindow* Engine::get_window(){
+    return Window.get_window();
+}
+
+
 }
