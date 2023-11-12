@@ -1,0 +1,14 @@
+Attributions for Audio Assets:
+
+
+background_music.mp3: 
+    Title: The Best Jazz Club In New Orleans
+    Artist: Paolo Argento
+    Link: https://pixabay.com/users/paoloargento-38603296/
+    License: Free to use except for distrubiton through digital streaming platforms.
+
+bang.mp3
+    Title: bang
+    Artist: SoulProdMusic
+    Link: https://pixabay.com/users/soulprodmusic-30064790/
+    License: None specified (free use website).

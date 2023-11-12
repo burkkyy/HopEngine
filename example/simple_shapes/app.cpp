@@ -35,5 +35,6 @@ int main(int argc, const char** argv){
 
     // Start the engine loop
     engine.run();
+
     return 0;
 }
