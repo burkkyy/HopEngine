@@ -29,7 +29,7 @@ class Keyboard{
     GLFWwindow* window; 
     // Key callback function is required by GLFW (with these parameters) to handle input callbacks.
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    // Inner class Key contains a key and corrosponding callbak function.
+    // Inner class Key contains a key and corrosponding callback function.
     struct Key{
         public:
         int code; // The key code as defined by GLFW.
@@ -46,7 +46,7 @@ class Keyboard{
     // Bind a GLFW key code to a void function with no parameters.
     void bind(int code, void (*Ptr)());
     // Bind a character (and it's opposite-case character) to a void function with no parameters.
-    void bind(char c, void (*Ptr)());
+    void bind(char c, void (*Ptr)());   
     // Bind a c-style string (eg "left", "space", "tab" to a void function with no parameters.
     bool bind(const char* key_str, void (*Ptr)());
 };
