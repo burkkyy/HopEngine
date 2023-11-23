@@ -81,8 +81,8 @@ void ObjectRenderSystem::create_pipeline(VkRenderPass render_pass){
         device,
         //SHADER_VERT_PATH,
         //SHADER_FRAG_PATH,
-        "shader.vert.spv",
-        "shader.frag.spv",
+        "../../engine/build/shadersshader.vert.spv",
+        "../../engine/build/shadersshader.frag.spv",
         pipeline_config
     );
 }
