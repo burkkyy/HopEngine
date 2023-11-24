@@ -213,11 +213,6 @@ The tester will then test each shape's color as each of the available options (R
 Once the functions relating to game objects are tested, the tester should comment out that code, then uncomment the aspects refering to the move plug-in and ensure that the plug-in performs without any errors for a square of each of the applicable sizes detailed above ($0.1$, $1.0$) and check that the program does not work for the remaining values above ($-1.0$, $2.1$). Next the square's color can be tested for each of the available options (RED, GREEN, BLUE, BLACK, WHITE). Finally, the tester should experiment with velocity values of $0.1$, $1.0$ and $2.1$.
 
 ### Table of all test cases
-a table of every test case and scenario to be applied, including for each:
-a unique name for the test case
-a short (one line) description of the specific requirement or functionality that test case covers
-the names of the files/programmed scripts/user-action scripts that contain the full data for this test case/scenario (any setup instructions for the test case/scenario, precise user actions in sequence and with every input value used, precise expected outputs/results)
-Note that the test cases/scenarios should cover both the handling of valid user behaviour/input and any error checking/handling the product is expected to perform.
 
 | Test Case     | Description 										| Code __(*)__ 					| Test Options |
 | ----------- 	| ----------- 										| -----------  					| ----------- |
