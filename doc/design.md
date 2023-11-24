@@ -128,18 +128,33 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 
 ```bash
 .
-├── Makefile
 ├── README.md
+├── Testing
+│   ├── MakeFile
+│   ├── test_plan.md
+│   └── tests.cpp
 ├── build.py
+├── buildenv
+│   └── Dockerfile
+├── doc
+│   ├── build.md
+│   ├── design.md
+│   ├── diagrams
+│   │   ├── context_diagram.png
+│   │   └── engine_diagram.png
+│   ├── git.md
+│   ├── non_functional_requirments.md
+│   ├── project_updates
+│   │   ├── project_updates_phase1.md
+│   │   ├── project_updates_phase3.md
+│   │   ├── project_updates_phase4.md
+│   │   └── project_updates_phase5.md
+│   ├── specifications.md
+│   ├── standards.md
+│   └── version_control.md
 ├── engine
 │   ├── Makefile
-│   ├── build_library.py
-│   ├── buildenv
-│   │   ├── Dockerfile
-│   │   ├── config.mk
-│   │   └── win64
-│   │       ├── Dockerfile
-│   │       └── config.mk
+│   ├── config.mk
 │   ├── shaders
 │   │   ├── shader.frag
 │   │   └── shader.vert
@@ -150,16 +165,18 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       ├── Engine
 │       │   ├── engine.cpp
 │       │   └── engine.hpp
+│       ├── Input
+│       │   ├── input.cpp
+│       │   └── input.hpp
 │       ├── Objects
-│       │   ├── game_object.hpp
-│       │   ├── object_model.cpp
-│       │   └── object_model.hpp
+│       │   ├── object.cpp
+│       │   └── object.hpp
 │       ├── Pipeline
 │       │   ├── pipeline.cpp
 │       │   └── pipeline.hpp
 │       ├── Render_Systems
 │       │   ├── object_render_system.cpp
-│       │   ├── object_render_system.hpp
+│       │   └── object_render_system.hpp
 │       ├── Renderer
 │       │   ├── renderer.cpp
 │       │   └── renderer.hpp
@@ -173,14 +190,12 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       │   └── window.hpp
 │       └── hop.hpp
 └── example
-    ├── bouncing-square
+    ├── moving_shapes
     │   ├── Makefile
-    │   └── main.cpp
-    └── triangle
+    │   └── app.cpp
+    └── simple_shapes
         ├── Makefile
-        ├── shader.frag.spv
-        ├── shader.vert.spv
-        └── triangle.cpp
+        └── app.cpp
 
 ```
 
