@@ -1,6 +1,5 @@
-# Phase 2: Glen's Contributions to Team Specifications Document
-
 ## Product Overview
+
 We intend to create Hop Engine, a lightweight, low-level and open-source two-dimensional game engine in C++ which we would like to make available on Vancouver Island University (VIU) Linux machines. The engine will interface with the Vulkan graphics API and provide a much simpler code library for programmers to interact with than is otherwise available. Our goal is to create a software library that will allow aspiring programmers to transition from the command line into basic graphical game design with a minimal learning curve.
 
 Our engine will support only the essential graphics rendering, input handling, and other necessary features. As much game-specific logic as possible will be left to the programmer. Through this design philosophy, we hope the programmer can spend more time programming in familliar C++ and less time learning engine-specific code.
@@ -13,29 +12,30 @@ As a C++ game-engine library, Hop allows user-programmers to handle graphics, so
 
 Here is a summary of some key classes and functions in our API.
 
-#### Window (class)
+#### Engine (class)
 
-The first step to creating any game is to create a window in which the game will reside.
+The central user-accessible class. Instantiating an Engine object and using the provided methods is how the user sets game parameters and describes the behaviour to be displayed to game players. 
 
  To generate a window,the user instantiates our Window class using the following syntax:
 
-> *Window my_window ("Hello World!",1200,800);*
+> *Engine game_engine ("Hello World!",1200,800);*
+> *game_engine.run();*
 
-This code will create a 1200 x 800 pixel non-fullscreen window entitled "Hello World!" 
+This code will create a 1200 x 800 pixel non-fullscreen window entitled "Hello World!" and launch the game. 
 
 After creating their window, the user can apply a background image using the set_background method:
 
-> *my_window.set_background("my_background.png");*
+> *game_engine.set_background("my_background.png");*
 
-This code will render a texture located in *assets/img/background/my_background.png* as a background image spanning the entire window. 
+This code will render a texture located in *image/my_background.png* as a background image spanning the entire window. 
 
 The user can clear the current window of all rendered graphics using the clear method:
 
-> *my_window.clear();*
+> *game_engine.clear();*
 
 Lastly, when the user is finished with their graphics window, they can close it by calling the close method:
 
-> *my_window.close();*
+> *game_engine.close();*
 
 #### Image (class)
 
@@ -43,8 +43,8 @@ After the user has created their window, they can use the image class to begin d
 
 An image object can be created using the following syntax: 
 
-> *Image my_image("cool_image.png",128,128,400,200,2)*
-
+> *Image my_image("cool_image.png",128,128,400,200,2);*
+> *game_engine.display(my_image);*
 Where the parameters are as follows:
 1. The name of the file within the *assets/img/images/* directory.
 2. The horizontal dimensions of the image in pixels.
@@ -92,18 +92,29 @@ Where the parameters are as follows:
 4. The vertical distance between the bottom of the window and the bottom of the text box.
 5. The colour of the text to be displayed.
 
-#### void btn_A() (function)
+#### Sound (class)
 
-A series of functions will be called when a bound button is pressed by the user. From within these functions, the user-programmer can handle the registered input as they wish. 
+A Sound class object represents a sound file and allows it to be played repeatedly. 
 
-#### void play_sound (function)
+> *Sound death_sound("you_died.wav");*
 
-play_sound is a function that will play an audio file located within the designated asset directory by specifying the file name. For example:
+Will create a sound object correlated to the file you_died.wav located at /sounds/you_died.wav when navigated from the project root directory.
 
-> *play_sound("sound_1.wav");*  
+#### void Engine::bind(const char* key name,void (*Ptr)()) (function)
 
-Will play the sound file *sound_1.wav* from the directory *assets/sound* if such a file exists in that directory.  
+This function will bind a key to a previously-defined void function. When the supplied key is pressed, the provided function is called. This function makes use of a function pointer, which is supplied as the second argument of this function. 
 
+> *game_engine.bind("ENTER", Jump);*
+
+Will cause a previously declared void function with no parameters called *Jump* to be called when the player inputs the enter key.
+
+#### void Engine::play_sound(Sound) (function)
+
+play_sound is a member function of Engine that plays a previously created sound file.
+
+> *game_engine.play_sound(mySound);*  
+
+Will play the sound file associated with the mySound object if such a file exists in assets/sound.
 ## Target Users and Scenarios
 
 The target user for Hop Engine is an aspiring programmer with some experience with the C++ programming language. In the context of VIU, we hope our library would be accessible to a second-year computer science student. Such a user would likely be comfortable writing code for command-line applications, but may have little experience creating more complex development environments or using non-standard libraries. 

@@ -15,3 +15,4 @@ See `doc/build.md` for more info on dependencies.
 * Caleb
 * Jake
 * Indigo
+* Glen
