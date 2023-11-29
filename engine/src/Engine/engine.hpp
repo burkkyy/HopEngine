@@ -269,7 +269,7 @@ std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height,
      * @return pointer to created circle object
      */
     std::shared_ptr<Circle> create_circle(int x, int y, int radius, Color color);
-    bool engine_valid;
+    bool window_open = true;
     std::shared_ptr<Window> window;
 
 private:

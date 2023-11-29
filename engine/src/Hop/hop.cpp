@@ -28,11 +28,11 @@ int Game::get_resolution_height(){
 }
 
 bool Game::is_running(){
-    return (graphics_engine->engine_valid)&&(!engine_stopped);
+    return (graphics_engine->window_open)&&(!engine_stopped);
 }
 
 void Game::update(){
-    if(graphics_engine->engine_valid == false){
+    if(graphics_engine->window_open == false){
         this->stop();
         return;
     }

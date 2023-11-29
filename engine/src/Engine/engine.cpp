@@ -18,7 +18,6 @@ Engine::~Engine(){
 
 void Engine::run(bool fullscreen){
     window->set_window_size(width,height);
-
     GameObject::set_resolution(this->width,this->height);
     window->Initialize(fullscreen);
     device = std::make_shared<Device>(*window);
@@ -127,18 +126,17 @@ int Engine::get_resolution_height(){
 
 void Engine::update(){
 
-    if(window->window_open){
+    if(!(window->should_close())){
         glfwPollEvents();
-        this->engine_valid = true;
         if(auto command_buffer = renderer->begin_frame()){
             renderer->begin_swapchain_render_pass(command_buffer);
             render_system->render_objects(command_buffer, objects);
             renderer->end_swapchain_render_pass(command_buffer);
             renderer->end_frame();
         }
-        else{
-            this->engine_valid = false;
-        }
+    }
+    else{
+        this->window_open= false;
     }
     vkDeviceWaitIdle(device->get_device());
 

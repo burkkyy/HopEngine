@@ -52,10 +52,8 @@ public:
      * @return If window closed
      */
     bool should_close(){ 
-        std::cout << "window check " << std::endl;
-        window_open = false;
         return glfwWindowShouldClose(win); 
-        }
+    }
     
     /**
      * @brief Dimensions of window

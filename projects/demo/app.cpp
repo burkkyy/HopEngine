@@ -44,7 +44,7 @@ void parse_input(hop::Game* game, std::vector<int> keys_pressed, std::vector<Gam
 int main(){
 
     hop::Game game("My_Game_Name");
-    game.set_fullscreen();
+    game.set_window_size(game.get_resolution_height(),game.get_resolution_height());
     game.run();
     
     std::vector<GameObject> head;
