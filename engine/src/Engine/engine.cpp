@@ -59,7 +59,20 @@ std::shared_ptr<Rectangle> Engine::create_rectangle(int x, int y, int width, int
     return rectangle;
 }
 
-std::shared_ptr<GameObject> Engine::create_triangle(Vertex v1, Vertex v2, Vertex v3, Color color){
+std::shared_ptr<GameObject> Engine::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
+    
+    float f_v1x = (2.0 * v1x)/this->width;
+    float f_v1y = 2 - (2.0 * v1y)/this->height;
+    float f_v2x = (2.0 * v2x)/this->width;
+    float f_v2y = 2 - (2.0 * v2y)/this->height;
+    float f_v3x = (2.0 * v3x)/this->width;
+    float f_v3y = 2 - (2.0 * v3y)/this->height;
+
+    std::cout << "v1x: " << v1x << ", f_v1x: " << f_v1x << " this->width: " << this->width << std::endl; 
+    Vertex v1{{f_v1x,f_v1y}};
+    Vertex v2{{f_v2x,f_v2y}};
+    Vertex v3{{f_v3x,f_v3y}};
+    
     std::vector<Vertex> vertices = {{v1}, {v2}, {v3}};
 
     auto game_object = std::make_shared<GameObject>();

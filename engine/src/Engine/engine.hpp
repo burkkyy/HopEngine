@@ -254,7 +254,7 @@ std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height,
      * @param color The color of the triangle
      * @return pointer to created object
      */
-    std::shared_ptr<GameObject> create_triangle( Vertex v1, Vertex v2, Vertex v3, Color color);
+    std::shared_ptr<GameObject> create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
     
     /**
      * @brief creates a circle

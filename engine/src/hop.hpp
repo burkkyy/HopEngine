@@ -20,9 +20,7 @@
 #include <iostream>
 #include <chrono>
 #include <memory>
-typedef std::shared_ptr<hop::Rectangle> Rectangle;
-typedef std::shared_ptr<hop::Circle> Circle;
-typedef std::shared_ptr<hop::GameObject> GameObject;
+
 
 namespace hop {
 
@@ -49,6 +47,8 @@ class Game{
 
     std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height, Color color);
     std::shared_ptr<Circle> create_circle(int x, int y, int radius, Color color);
+    std::shared_ptr<hop::GameObject> create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
+
     bool is_running();
     void update();
     bool monitor_key(int key_code);

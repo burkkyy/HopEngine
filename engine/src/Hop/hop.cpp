@@ -85,3 +85,8 @@ std::shared_ptr<hop::Rectangle> Game::create_rectangle(int x, int y, int width, 
 std::shared_ptr<hop::Circle> Game::create_circle(int x, int y, int radius, Color color){
     return graphics_engine->create_circle(x,y,radius,color);
 }
+
+std::shared_ptr<hop::GameObject> Game::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
+    return graphics_engine->create_triangle(v1x,v1y,v2x,v2y,v3x,v3y,color);
+}
+
