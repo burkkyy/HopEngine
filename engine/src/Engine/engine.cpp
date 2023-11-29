@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <Image/image.hpp>
 using namespace std::chrono;
 namespace hop {
 
@@ -14,8 +13,7 @@ Engine::Engine(const char* window_title){
 }
 
 Engine::~Engine(){
-    //delete renderer; 
-    //delete window;
+
 }
 
 void Engine::run(bool fullscreen){
@@ -24,7 +22,6 @@ void Engine::run(bool fullscreen){
     GameObject::set_resolution(this->width,this->height);
     window->Initialize(fullscreen);
     device = std::make_shared<Device>(*window);
-    Image::set_device(device);
     renderer = std::make_shared<Renderer>(*window, *device);
     render_system = std::make_shared<ObjectRenderSystem>(*device, renderer->get_swapchain_render_pass());
     this->update();

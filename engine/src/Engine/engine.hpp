@@ -14,8 +14,7 @@
 #include "Device/device.hpp"
 #include "Renderer/renderer.hpp"
 #include "Objects/object.hpp"
-//#include "Render_Systems/object_render_system.hpp"
-#include "Render_Systems/image_render_system.hpp"
+#include "Render_Systems/object_render_system.hpp"
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -229,7 +228,7 @@ public:
     }
 
     /**
-     * @brief creates a square
+     * @brief creates a rectangle
      *
      * Creates a square object the engine will render. The (x, y) coord refers 
      * to the top left corner of the shape.

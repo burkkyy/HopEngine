@@ -6,7 +6,7 @@
 using namespace hop;
 
 Game::Game(const char* window_name){
-    graphics_engine = new Engine(window_name);
+    graphics_engine = std::make_shared<Engine>(window_name);
 
 }
 
@@ -16,7 +16,7 @@ bool Game::set_window_size(int width, int height){
 
 void Game::run(){
     graphics_engine->run(fullscreen);
-    keyboard = new Keyboard(graphics_engine->get_glfw_window());
+    keyboard = std::make_shared<Keyboard>(graphics_engine->get_glfw_window());
 }
 
 int Game::get_resolution_width(){

@@ -53,7 +53,6 @@ int main(){
     head.push_back(game.create_rectangle(320,320,20,20,hop::GREEN));
     head.push_back(game.create_circle(200,200,100,hop::BLUE));
     monitor_keys(&game);
-        hop::Image img("texture.jpg");
 
     while(game.is_running()){
         game.update();

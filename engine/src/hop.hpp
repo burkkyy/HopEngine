@@ -19,7 +19,7 @@
 #include <vector>
 #include <iostream>
 #include <chrono>
-#include <Image/image.hpp>
+#include <memory>
 typedef std::shared_ptr<hop::Rectangle> Rectangle;
 typedef std::shared_ptr<hop::Circle> Circle;
 typedef std::shared_ptr<hop::GameObject> GameObject;
@@ -62,8 +62,8 @@ class Game{
     std::vector<int> get_released_keys();
 
     private:
-    Engine* graphics_engine;
-    Keyboard* keyboard;
+    std::shared_ptr<Engine> graphics_engine;
+    std::shared_ptr<Keyboard> keyboard;
     bool engine_stopped = false;
     bool fullscreen = false;
 
