@@ -4,14 +4,24 @@
 
 namespace hop {
 
-Window::Window(int w, int h) : width{w}, height{h} {
+Window::Window(const char* w_name){
+    window_name = w_name;
     glfwInit();
+    get_screen_resolution();    
+}
+
+void Window::Initialize(bool fullscreen){
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    
-    win = glfwCreateWindow(width, height, window_name, nullptr, nullptr);
+    if(fullscreen){
+        win = glfwCreateWindow(width, height, window_name, glfwGetPrimaryMonitor(), nullptr);
+    }
+    else{
+        win = glfwCreateWindow(width, height, window_name, nullptr, nullptr);
+    }
     glfwSetWindowUserPointer(win, this);
     glfwSetFramebufferSizeCallback(win, framebuffer_resize_callback);
+    window_open = true;
 }
 
 Window::~Window(){
@@ -33,4 +43,24 @@ void Window::framebuffer_resize_callback(GLFWwindow* window, int width, int heig
     _win->height = height;
 }
 
+void Window::get_screen_resolution(){
+    const GLFWvidmode* video_mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    this->resolution_width = video_mode->width;
+    this->resolution_height = video_mode->height;
+
 }
+
+int Window::get_resolution_width(){
+    return this->resolution_width;
+    }
+int Window::get_resolution_height(){return this->resolution_height;}
+void Window::set_window_size(int w, int h){
+    width = w;
+    height = h;
+}    
+GLFWwindow* Window::get_glfw_window(){
+    return win;
+}
+
+}
+

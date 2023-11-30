@@ -275,6 +275,7 @@ bool Device::is_device_suitable(VkPhysicalDevice device){
     are returned to device_features list of them are
     https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFeatures.html*/
     VkPhysicalDeviceFeatures device_features;
+    device_features.samplerAnisotropy = VK_TRUE;
     vkGetPhysicalDeviceFeatures(device, &device_features);
     
     /* Checking if device supports swapchain */
@@ -558,4 +559,11 @@ void Device::create_command_pool(){
     VK_INFO("created command pool");
 }
 
+VkDevice Device::get_vk_device(){
+    return device; 
+}
+
+VkPhysicalDeviceProperties Device::get_VkPhysicalDeviceProperties (){
+    return properties; 
+}
 }

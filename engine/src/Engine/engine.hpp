@@ -14,16 +14,16 @@
 #include "Device/device.hpp"
 #include "Renderer/renderer.hpp"
 #include "Objects/object.hpp"
-
+//#include "Render_Systems/object_render_system.hpp"
+#include "Render_Systems/image_render_system.hpp"
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-
 #include <memory>
 #include <optional>
-
 namespace hop {
+
 
 using Vertex = ObjectModel::Vertex;
 using Color = glm::vec3;
@@ -38,27 +38,34 @@ class Engine;
  */
 class GameObject {
 public:
-    glm::vec2 position(){
-        return object->transform.translation;
+    int x;
+    int y;
+    int width;
+    int height;
+    inline static int resolution_width;
+    inline static int resolution_height;
+
+    void move(int x_offset, int y_offset){
+                x = x + x_offset;
+                y = y + y_offset; 
+                float f_move_x = coord_to_float_x(x_offset);
+                float f_move_y = coord_to_float_y(y_offset);
+                object->transform.translation.x += f_move_x;
+                object->transform.translation.y += f_move_y;
+        
     }
 
-    void move(float x, float y){
-        object->transform.translation.x += x;
-        object->transform.translation.y += y;
-    }
-
-    void set_object(std::shared_ptr<Object>&& obj){
-        object.reset();
-        object = obj;
-    }
-
-    void set_color(const Color& new_color){
-        color = new_color;
-    }
+    void set_object(std::shared_ptr<Object>&& obj);
+    void set_color(const Color& new_color);
+    static void set_resolution(int res_width, int res_height);
+    float coord_to_float_x(int i_x);
+    float coord_to_float_y(int i_y);
 
 private:
     Color color;
     std::shared_ptr<Object> object;
+
+
 };
 
 /**
@@ -68,10 +75,9 @@ private:
  * kind of GameObject is being created 
  *
  */
-class Square : public GameObject {
+class Rectangle : public GameObject {
 public:
-    float width = 0.0f;
-    float height = 0.0f;
+
 };
 
 /**
@@ -83,7 +89,7 @@ public:
  */
 class Circle : public GameObject {
 public:
-    float radius = 0.0f;
+    int radius = 0;
 };
 
 
@@ -151,18 +157,28 @@ public:
  *
  */
 class Engine {
+
+private:
+bool cooldown = false;
+
 public:
 
     /**
      * @brief Default Constructor
      */
-    Engine();
+    Engine(const char* window_title);
     
     /**
      * @brief Default Deconstructor
      */
     ~Engine();
 
+    bool set_window_size(int width, int height);
+    int get_resolution_width();
+    int get_resolution_height();
+    GLFWwindow* get_glfw_window(){
+        return window->get_glfw_window();
+    }
     // Prevents copying of this object
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;
@@ -177,8 +193,10 @@ public:
      *
      * @return void
      */
-    void run();
+    void run(bool fullscreen);
     
+    void update();
+
     /**
      * @brief creates an object
      *
@@ -223,7 +241,7 @@ public:
      * @param color The color of the square
      * @return pointer to created square object
      */
-    std::shared_ptr<Square> create_square(float x, float y, float width, float height, Color color);
+std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height, Color color);
     
     /**
      * @brief creates a triangle
@@ -237,7 +255,7 @@ public:
      * @param color The color of the triangle
      * @return pointer to created object
      */
-    std::shared_ptr<GameObject> create_triangle(Vertex v1, Vertex v2, Vertex v3, Color color);
+    std::shared_ptr<GameObject> create_triangle( Vertex v1, Vertex v2, Vertex v3, Color color);
     
     /**
      * @brief creates a circle
@@ -251,19 +269,23 @@ public:
      * @param color The color of the circle
      * @return pointer to created circle object
      */
-    std::shared_ptr<Circle> create_circle(float x, float y, float radius, Color color);
-
-    const int WIDTH = 800;
-    const int HEIGHT = 800;
-    const char* NAME = "hop engine";
+    std::shared_ptr<Circle> create_circle(int x, int y, int radius, Color color);
+    bool engine_valid;
+    std::shared_ptr<Window> window;
 
 private:
-    Window window{WIDTH, HEIGHT};
-    Device device{window};
-    Renderer renderer{window, device};
-
+    std::shared_ptr<Device> device;
+    std::shared_ptr<Renderer> renderer;
+    std::shared_ptr<ObjectRenderSystem> render_system;
+    /*Window* window;
+    Device* device;
+    Renderer* renderer;*/
+    const char* window_title;
+    int width = 800;
+    int height = 600;
     std::vector<std::shared_ptr<Object>> objects;
     std::vector<std::shared_ptr<EnginePlugin>> plugins;
+
 };
 
 }
