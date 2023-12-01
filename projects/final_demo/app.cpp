@@ -50,6 +50,39 @@ void parse_input(hop::Game* game, std::vector<int> keys_pressed, std::vector<hop
     }
 }
 
+bool collision(hop::GameObject obj1, hop::GameObject obj2){
+    bool x_overlap = false;
+    bool y_overlap = false;
+
+    int o1_minx = obj1->x;
+    int o1_maxx = obj1->x + obj1->width;
+    int o1_miny = obj1->y;
+    int o1_maxy = obj1->y + obj1->height; 
+    int o2_minx = obj2->x;
+    int o2_maxx = obj2->x + obj2->width;
+    int o2_miny = obj2->y;
+    int o2_maxy = obj2->y + obj2->height; 
+
+    if((o1_minx<= o2_minx)&&(o1_maxx >= o2_minx)){
+        x_overlap = true;
+    }
+
+    if((o2_minx<= o1_minx)&&(o2_maxx >= o1_minx)){
+        x_overlap = true;
+    }
+    if((o1_miny<= o2_miny)&&(o1_maxy >= o2_miny)){
+        y_overlap = true;
+    }
+
+    if((o2_miny<= o1_miny)&&(o2_maxy >= o1_miny)){
+        y_overlap = true;
+    }
+
+    return x_overlap && y_overlap;
+
+    return false;
+}
+
 int main(){
 
     hop::Game game("Bunny_Game");
@@ -64,9 +97,12 @@ int main(){
     
     // CARROT
     std::vector<hop::GameObject> carrot;
-    carrot.push_back(game.create_triangle(920,1020,850,960,940,980,orange)); //carrot body
-    carrot.push_back(game.create_triangle(930,1000,945,1020,950,990,hop::GREEN)); //carrot body
+    hop::Triangle carrot_body = game.create_triangle(920,1020,850,960,940,980,orange);
+    carrot.push_back(carrot_body);
+    
+    hop::Triangle carrot_top = game.create_triangle(930,1000,945,1020,950,990,hop::GREEN);
 
+    carrot.push_back(carrot_top);
     
     // stairs   
     std::vector<hop::GameObject> stairs;
@@ -84,7 +120,8 @@ int main(){
     hank.push_back(game.create_rectangle(95,1030,5,10,hop::BLACK)); //bunny eye
     hank.push_back(game.create_rectangle(106,1020,4,5,pink)); //bunny nose
     hank.push_back(game.create_rectangle(70,1010,40,40,hop::WHITE)); //bunny head
-    hank.push_back(game.create_rectangle(30,980,70,50,hop::WHITE)); //bunny body
+    hop::Rectangle bunny_bod = game.create_rectangle(30,980,70,50,hop::WHITE);
+    hank.push_back(bunny_bod);
     hank.push_back(game.create_rectangle(80,1050,10,25,hop::WHITE)); //bunny ear
     hank.push_back(game.create_circle(20,990,10,hop::WHITE)); //bunny tail
     hank.push_back(game.create_rectangle(40,975,10,10,hop::WHITE)); //bunny back feet
@@ -97,6 +134,10 @@ int main(){
         game.update();
         std::vector<int> keys_pressed = game.get_pressed_keys();
         parse_input(&game, keys_pressed,hank);
+        if(collision(bunny_bod,carrot_body)){
+            carrot_body->move(50,0);
+            carrot_top->move(50,0);
+        }
     }
 
     return 0;
