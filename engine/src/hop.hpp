@@ -1,5 +1,4 @@
 
-#pragma once
 /**
  * @file hop.cpp
  * @author Caleb Burke
@@ -9,6 +8,9 @@
  * Other helper functions and constants defined here.
  *
  */
+
+#ifndef HOPENGINE_HEADER
+#define HOPENGINE_HEADER
 
 #include <Input/input.hpp>
 #include <Engine/engine.hpp>
@@ -23,6 +25,10 @@
 
 
 namespace hop {
+typedef std::shared_ptr<hop::EngineRectangle> Rectangle;
+typedef std::shared_ptr<hop::EngineCircle> Circle;
+typedef std::shared_ptr<hop::EngineGameObject> Triangle;
+typedef std::shared_ptr<hop::EngineGameObject> GameObject;
 
 // Colors objects can be set to
 #define RED Color{1.0f, 0.0f, 0.0f}
@@ -45,9 +51,9 @@ class Game{
     int get_resolution_width();
     int get_resolution_height();
 
-    std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height, Color color);
-    std::shared_ptr<Circle> create_circle(int x, int y, int radius, Color color);
-    std::shared_ptr<hop::GameObject> create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
+    Rectangle create_rectangle(int x, int y, int width, int height, Color color);
+    Circle create_circle(int x, int y, int radius, Color color);
+    Triangle create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
 
     bool is_running();
     void update();
@@ -70,4 +76,27 @@ class Game{
 
 };
 
+class ObjectGroup{
+
+    public:
+
+    ObjectGroup(int x, int y,int width, int height);
+    
+    bool create_rectangle(int x, int y, int width, int height, Color color);
+    bool create_circle(int x, int y, int radius, Color color);
+    bool create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
+    inline static void set_game(Game* game);
+    void set_color(hop::Color color);
+    void move(int x, int y);
+
+    private:
+    int x;
+    int y;
+    int width;
+    int height;
+    std::vector<GameObject> game_objects;
+    inline static Game* game;
+};
+
 }
+#endif 

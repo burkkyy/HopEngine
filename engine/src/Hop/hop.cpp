@@ -3,10 +3,13 @@
 #include <chrono>
 #include <thread>
 #include <memory>
+#include <algorithm>
 using namespace hop;
 
 Game::Game(const char* window_name){
     graphics_engine = std::make_shared<Engine>(window_name);
+        ObjectGroup::set_game(this);
+
 
 }
 
@@ -78,15 +81,79 @@ std::vector<int> Game::get_released_keys(){
     return keyboard->get_released_keys();
 }
 
-std::shared_ptr<hop::Rectangle> Game::create_rectangle(int x, int y, int width, int height, Color color){
+Rectangle Game::create_rectangle(int x, int y, int width, int height, Color color){
     return graphics_engine->create_rectangle(x, y, width, height, color);
 }
     
-std::shared_ptr<hop::Circle> Game::create_circle(int x, int y, int radius, Color color){
+Circle Game::create_circle(int x, int y, int radius, Color color){
     return graphics_engine->create_circle(x,y,radius,color);
 }
 
-std::shared_ptr<hop::GameObject> Game::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
+Triangle Game::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
     return graphics_engine->create_triangle(v1x,v1y,v2x,v2y,v3x,v3y,color);
 }
 
+ObjectGroup::ObjectGroup(int x, int y,int width, int height){
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+}
+
+bool ObjectGroup::create_rectangle(int x, int y, int width, int height, Color color){
+    if(((x + width)>this->width)||((y+height)>this->height)){
+        return false;
+    }
+    else{
+        game_objects.push_back(game->create_rectangle(x + this->x,y + this->y,width,height,color));
+        return true;
+    }
+}
+
+bool ObjectGroup::create_circle(int x, int y, int radius, Color color){
+    
+    if((x + (2*radius))>this->width){
+        return false;
+    }
+    else{
+        game_objects.push_back(game->create_circle(x + this->x,y + this->y,radius,color));
+        return true;
+    }
+}
+
+bool ObjectGroup::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
+    
+    int min_x, max_x, min_y, max_y;
+
+    min_x = std::min(v1x,v2x);
+    min_x = std::min(min_x,v3x);
+    max_x = std::max(v1x,v2x);
+    max_x = std::max(max_x,v3x);
+    min_y = std::min(v1y,v2y);
+    min_y = std::min(min_y,v3y);
+    max_y = std::max(v1y,v2y);
+    max_y = std::max(max_y,v3y);
+
+    if((min_x<0)||(min_y<0)||((max_x-min_x)>this->width)||((max_y-min_y)>height||(max_x>width)||(max_y>height))){
+        return false;
+    }
+
+    else{
+        game_objects.push_back(game->create_triangle(v1x+x,v1y+y,v2x+x,v2y+y,v3x+x,v3y+y,color));
+        return true;
+    }
+}
+
+void ObjectGroup::set_game(Game* g){
+    game = g;
+}
+
+void ObjectGroup::set_color(hop::Color color){
+
+}
+
+void ObjectGroup::move(int x, int y){
+    for(auto o:game_objects){
+        o->move(x,y);
+    }
+}
