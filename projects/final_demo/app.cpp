@@ -12,7 +12,16 @@ void monitor_keys(hop::Game* game){
     game->monitor_key(KEY_ESCAPE);
 
 }
-
+/*class Square{
+public:
+	Square(int x, int y){ //says game is uninitialized in function
+		hop::Game* game;
+		int w = 50;
+		int h = 70;
+		hop::Color color = hop::RED;
+		game->create_rectangle(x, y, w, h, color);
+	}	
+};*/
 void parse_input(hop::Game* game, std::vector<int> keys_pressed, std::vector<GameObject> hank){
 
     for(int k: keys_pressed){
@@ -51,18 +60,25 @@ int main(){
     
     // Custom colours
     hop::Color orange={{0.9}, {0.5}, {0.0}};
-    hop::Color brown={{1}, {0.76}, {0.9}};
+    hop::Color light_pink={{1}, {0.76}, {0.9}};
+    hop::Color brown={{0.7}, {0.4}, {0.1}};
     
     // CARROT
     std::vector<GameObject> carrot;
-    carrot.push_back(game.create_triangle(150,1000,900,930,100,980,orange)); //ear detail
+    carrot.push_back(game.create_triangle(920,1020,850,960,940,980,orange)); //carrot body
+    carrot.push_back(game.create_triangle(930,1000,945,1020,950,990,hop::GREEN)); //carrot body
+
     
     
     // stairs   
     std::vector<GameObject> stairs;
-    stairs.push_back(game.create_rectangle(0,0,80,975,brown)); // hank spawn
-    stairs.push_back(game.create_rectangle(80,0,70,975,hop::WHITE));
-    stairs.push_back(game.create_rectangle(160,0,70,975,hop::BLUE));
+    stairs.push_back(game.create_rectangle(0,0,150,975,brown)); // hank spawn
+    stairs.push_back(game.create_rectangle(150,0,70,950,brown));
+    stairs.push_back(game.create_rectangle(220,0,100,930,brown));
+    stairs.push_back(game.create_rectangle(320,0,80,910,brown));
+    stairs.push_back(game.create_rectangle(400,0,200,890,brown));//done
+    stairs.push_back(game.create_rectangle(600,0,200,870,brown));
+    stairs.push_back(game.create_rectangle(1000,0,100,870,brown));//done
 
     // hank
     std::vector<GameObject> hank;
@@ -76,6 +92,7 @@ int main(){
     hank.push_back(game.create_rectangle(40,975,10,10,hop::WHITE)); //bunny back feet
     hank.push_back(game.create_rectangle(80,975,10,10,hop::WHITE)); //bunny front feet
 
+   // Square newSquare(100, 1100);
     monitor_keys(&game);
 
     while(game.is_running()){
