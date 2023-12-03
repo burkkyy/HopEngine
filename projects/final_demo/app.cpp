@@ -17,35 +17,10 @@ void monitor_keys(hop::Game* game){
 
 bool collision(hop::Image* hank, hop::Image* thing);
 bool bunny_grounded(hop::Image *hank, hop::Image* terrain); 
-
-void parse_input_press(hop::Game* game, std::vector<int> keys_pressed, hop::Image* hank, hop::Image* terrain){
-
-    for(int k: keys_pressed){
-        if(k==KEY_ESCAPE){
-            game->stop();
-        }
-        if(k==KEY_RIGHT){
-                hank->move(30,0);
-        }
-        if(k==KEY_LEFT){
-            hank->move(-30,0);
-        }  
-        if(k == KEY_LEFT_SHIFT){
-            hank->flip();
-        }
-        if(k == KEY_SPACE){
-            if(bunny_grounded(hank,terrain)){
-                hank->move(0,70);
-            }
-        }
-    }
-}
-
-
-
+bool collision(hop::Image* hank, hop::GameObject thing);
 
 int main(){
-
+    bool hank_right = true;
     hop::Game game("Bunny_Game");
     hop::Color pink={{1.0}, {0.4}, {0.7}};
     game.set_window_size(game.get_resolution_height(),game.get_resolution_height());
@@ -62,15 +37,17 @@ int main(){
     carrot.create_triangle(80,40,95,60,100,30,hop::GREEN);
     
     // stairs
-    hop::Image stairs(0,0,1100,975);
-    stairs.create_rectangle(0,0,150,975,brown);
-    stairs.create_rectangle(150,0,70,950,brown);
-    stairs.create_rectangle(220,0,100,930,brown);
-    stairs.create_rectangle(320,0,80,910,brown);
-    stairs.create_rectangle(400,0,200,890,brown);
-    stairs.create_rectangle(600,0,200,870,brown);
-    stairs.create_rectangle(1000,0,100,870,brown);
+    hop::Image stairs(0,0,1400,975);
+    stairs.create_rectangle(0,0,200,750,brown); // hank spawn
+    stairs.create_rectangle(200,650,200,100,brown);
+    stairs.create_rectangle(400,650,200,150,brown);
+    stairs.create_rectangle(600,750,170,50,brown);
+    stairs.create_rectangle(200,0,1200,200,brown);
+    stairs.create_rectangle(1000,0,200,800,brown);
+    stairs.create_rectangle(770,375,150,200,brown);
 
+    hop::Image hideout(770,200,300,175);
+    hideout.create_rectangle(0,0,300,175,hop::WHITE);//bunny hideout
 
     // hank
     hop::Image hank(30,975,90,100);
@@ -89,13 +66,38 @@ int main(){
     float falling_duration = 1.0;
     while(game.is_running()){
         game.update();
-        std::vector<int> keys_pressed = game.get_pressed_keys();
-        std::vector<int> keys_held = game.get_held_keys();
+        if(game.key_pressed(KEY_ESCAPE)){
+            game.stop();
+        }
 
-        parse_input_press(&game, keys_pressed,&hank, &stairs);
+        if(game.key_pressed(KEY_SPACE)&&(bunny_grounded(&hank,&stairs))){
+            if(hank_right){
+                hank.move(200,100);   
+            }
+            else{
+                hank.move(-200,100);
+            }
+          }
+        
+        if(game.key_pressed(KEY_RIGHT)||game.key_held(KEY_RIGHT)){
+            hank.move(10,0);
+            if(!hank_right){
+                hank.flip();
+                hank_right = true;
+            }
+    }
+        if(game.key_pressed(KEY_LEFT)||game.key_held(KEY_LEFT)){
+            hank.move(-10,0);
+            if(hank_right){
+                hank.flip();
+                hank_right = false;
+            }
+        }
         if(collision(&hank,&carrot)){
             carrot.move(50,0);
-            carrot.move(50,0);
+        }
+        if(collision(&hank,&hideout)){
+            hideout.move(1000,0);
         }
         if(!bunny_grounded(&hank,&stairs)){
             falling_duration += 0.5;

@@ -23,7 +23,6 @@
 #include <chrono>
 #include <memory>
 
-
 namespace hop {
 typedef std::shared_ptr<hop::EngineRectangle> Rectangle;
 typedef std::shared_ptr<hop::EngineCircle> Circle;
@@ -98,7 +97,6 @@ class Image{
     int get_width();
     std::vector<GameObject> game_objects;
 
-
     private:
     int x;
     int y;
@@ -114,7 +112,6 @@ class TextBox{
     public:
     
     TextBox(int x, int y, int text_size, Color text_color, const char* text_string);
-
 
     private:
     int text_size;
