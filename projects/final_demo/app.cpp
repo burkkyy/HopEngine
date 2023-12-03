@@ -47,7 +47,7 @@ void parse_input_press(hop::Game* game, std::vector<int> keys_pressed, hop::Imag
             std::cout << ", Hank width: " << hank->get_width();
             std::cout << ", Hank height: " << hank->get_height() << std::endl;
             hank->flip();
-    /*
+    /* 
             std::cout << "After flip: " << std::endl;
             std::cout << "Hank x: " << hank->get_x();
             std::cout << ", Hank y: " << hank->get_y();
