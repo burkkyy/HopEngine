@@ -12,17 +12,17 @@ void monitor_keys(hop::Game* game){
 
 }
 
-void parse_input(hop::Game* game, std::vector<int> keys_pressed, hop::ObjectGroup* group){
+void parse_input(hop::Game* game, std::vector<int> keys_pressed, hop::Image* group){
 
     for(int k: keys_pressed){
         if(k==KEY_ESCAPE){
             game->stop();
         }
         if(k==KEY_RIGHT){
-            group->move(100,0);
+            group->move(90,0);
         }
         if(k==KEY_LEFT){
-            group->move(-100,00);
+            group->move(-90,00);
         }
         if(k==KEY_UP){
             group->move(0,100);
@@ -38,64 +38,39 @@ int main(){
     hop::Game game("My_Game_Name");
     game.set_fullscreen();
     game.run();
-    
-    hop::ObjectGroup A(200,800,32,40);
-    A.create_rectangle(0,0,8,32,hop::WHITE);
-    A.create_rectangle(24,0,8,32,hop::WHITE);
-    A.create_rectangle(8,32,16,8,hop::WHITE);
-    A.create_rectangle(8,16,16,8,hop::WHITE);
-        
-    hop::ObjectGroup AA(240,800,32,40);
-    AA.create_rectangle(0,0,8,32,hop::RED);
-    AA.create_rectangle(24,0,8,32,hop::RED);
-    AA.create_rectangle(8,32,16,8,hop::RED);
-    AA.create_rectangle(8,16,16,8,hop::RED);
-    
-    hop::ObjectGroup AAA(280,800,32,40);
-    AAA.create_rectangle(0,0,8,32,hop::BLUE);
-    AAA.create_rectangle(24,0,8,32,hop::BLUE);
-    AAA.create_rectangle(8,32,16,8,hop::BLUE);
-    AAA.create_rectangle(8,16,16,8,hop::BLUE);
-    
-    hop::ObjectGroup B(320,800,32,40);
-    B.create_rectangle(0,0,8,40,hop::WHITE);
-    B.create_rectangle(8,0,16,8,hop::WHITE);
-    B.create_rectangle(8,16,16,8,hop::WHITE);
-    B.create_rectangle(8,32,16,8,hop::WHITE);
-    B.create_rectangle(24,8,8,8,hop::WHITE);
-    B.create_rectangle(24,24,8,8,hop::WHITE);
-    B.create_rectangle(24,4,4,16,hop::WHITE);
-    B.create_rectangle(24,20,4,16,hop::WHITE);
+    hop::Color pink={{1.0}, {0.4}, {0.7}};
 
-    hop::ObjectGroup BB(360,800,32,40);
-    BB.create_rectangle(0,0,8,40,hop::RED);
-    BB.create_rectangle(8,0,16,8,hop::RED);
-    BB.create_rectangle(8,16,16,8,hop::RED);
-    BB.create_rectangle(8,32,16,8,hop::RED);
-    BB.create_rectangle(24,8,8,8,hop::RED);
-    BB.create_rectangle(24,24,8,8,hop::RED);
-    BB.create_rectangle(24,4,4,16,hop::RED);
-    BB.create_rectangle(24,20,4,16,hop::RED);
+    hop::TextBox a(0,600,6,hop::GREEN,"1234,56789?a?b!");
+    hop::TextBox b(0,400,1,hop::GREEN,"It was the best of times,it was the blurst of times. Was it though?");
 
-    hop::ObjectGroup BBB(400,800,32,40);
-    BBB.create_rectangle(0,0,8,40,hop::BLUE);
-    BBB.create_rectangle(8,0,16,8,hop::BLUE);
-    BBB.create_rectangle(8,16,16,8,hop::BLUE);
-    BBB.create_rectangle(8,32,16,8,hop::BLUE);
-    BBB.create_rectangle(24,8,8,8,hop::BLUE);
-    BBB.create_rectangle(24,24,8,8,hop::BLUE);
-    BBB.create_rectangle(24,4,4,16,hop::BLUE);
-    BBB.create_rectangle(24,20,4,16,hop::BLUE);
-
-
+    hop::Image Hank2(30,975,90,100);
+    Hank2.create_rectangle(64,75,6,15,pink); //ear detail
+    Hank2.create_rectangle(75,55,5,10,hop::BLACK); //bunny eye
+    Hank2.create_rectangle(86,45,4,5,pink); //bunny nose
+    Hank2.create_rectangle(50,35,40,40,hop::WHITE); //bunny head
+    Hank2.create_rectangle(10,5,70,50,hop::WHITE); // bunny body
+    Hank2.create_rectangle(60,75,10,25,hop::WHITE); //bunny ear
+    Hank2.create_circle (0,15,10,hop::WHITE); //bunny tail
+    Hank2.create_rectangle(20,0,10,10,hop::WHITE); //bunny back feet
+    Hank2.create_rectangle(60,0,10,10,hop::WHITE); //bunny front feet
+    hop::Image Hank(30,975,90,100);
+    Hank.create_rectangle(64,75,6,15,pink); //ear detail
+    Hank.create_rectangle(75,55,5,10,hop::BLACK); //bunny eye
+    Hank.create_rectangle(86,45,4,5,pink); //bunny nose
+    Hank.create_rectangle(50,35,40,40,hop::WHITE); //bunny head
+    Hank.create_rectangle(10,5,70,50,hop::WHITE); // bunny body
+    Hank.create_rectangle(60,75,10,25,hop::WHITE); //bunny ear
+    Hank.create_circle (0,15,10,hop::WHITE); //bunny tail
+    Hank.create_rectangle(20,0,10,10,hop::WHITE); //bunny back feet
+    Hank.create_rectangle(60,0,10,10,hop::WHITE); //bunny front feet
+    Hank.flip();
     monitor_keys(&game);
-    float changing_color = 0.0;
     while(game.is_running()){
         game.update();
         
         std::vector<int> keys_pressed = game.get_pressed_keys();
 
-        parse_input(&game, keys_pressed, &A);
+        parse_input(&game, keys_pressed, &Hank);
     }
 
     return 0;

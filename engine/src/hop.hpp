@@ -66,37 +66,63 @@ class Game{
     std::vector<int> get_pressed_keys();
     std::vector<int> get_held_keys();
     std::vector<int> get_released_keys();
-
+    
     private:
     std::shared_ptr<Engine> graphics_engine;
     std::shared_ptr<Keyboard> keyboard;
     bool engine_stopped = false;
     bool fullscreen = false;
 
-
+    
 };
 
-class ObjectGroup{
+class Image{
 
     public:
 
-    ObjectGroup(int x, int y,int width, int height);
-    
+    Image(int x, int y,int width, int height);
     bool create_rectangle(int x, int y, int width, int height, Color color);
     bool create_circle(int x, int y, int radius, Color color);
     bool create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
-    inline static void set_game(Game* game);
-    void set_color(hop::Color color);
+    bool add_image(int x, int y, Image image);
+    void set_color_all(Color color);
     void move(int x, int y);
+    inline static void set_game(Game* game);    
+    void flip();
+    int get_x();
+    int get_y();
+    int get_height();
+    int get_width();
+    std::vector<GameObject> game_objects;
+
 
     private:
     int x;
     int y;
     int width;
     int height;
-    std::vector<GameObject> game_objects;
+    std::vector<Image> images;
     inline static Game* game;
 };
 
+
+class TextBox{
+
+    public:
+    
+    TextBox(int x, int y, int width, Color text_color, const char* text_string);
+
+
+    private:
+    int text_size;
+    int stride;
+    int place;
+    int width;
+    Color color;
+    std::string string;
+    std::shared_ptr<Image> image; 
+    void render_text();
+    Image render_letter(char c, bool* valid_character);
+};
 }
 #endif 
