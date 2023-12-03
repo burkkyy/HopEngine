@@ -66,6 +66,14 @@ bool Game::key_pressed(int key){
     return keyboard->key_pressed(key);
 }
 
+bool Game::key_held(int key){
+    return keyboard->key_held(key);
+}
+
+bool Game::key_released(int key){
+    return keyboard->key_released(key);
+}
+
 void Game::stop(){
     engine_stopped = true;
 }
@@ -207,7 +215,6 @@ TextBox::TextBox(int x, int y, int text_size, Color text_color, const char* text
     this->color = text_color;
     this->stride = 20*text_size;
     this->place = 0;
-    this->width = width;
 
     image = std::make_shared<Image>(x, y, (20*text_size*string.size()),20*text_size);
     render_text();

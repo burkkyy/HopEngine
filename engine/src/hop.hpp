@@ -62,6 +62,9 @@ class Game{
     static std::vector<int> keys_held;
     static std::vector<int> keys_monitored;
     bool key_pressed(int key);
+    bool key_held(int key);
+    bool key_released(int key);
+
     void stop();
     std::vector<int> get_pressed_keys();
     std::vector<int> get_held_keys();
@@ -110,14 +113,13 @@ class TextBox{
 
     public:
     
-    TextBox(int x, int y, int width, Color text_color, const char* text_string);
+    TextBox(int x, int y, int text_size, Color text_color, const char* text_string);
 
 
     private:
     int text_size;
     int stride;
     int place;
-    int width;
     Color color;
     std::string string;
     std::shared_ptr<Image> image; 

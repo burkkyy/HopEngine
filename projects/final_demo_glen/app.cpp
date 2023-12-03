@@ -10,19 +10,11 @@ void monitor_keys(hop::Game* game){
     game->monitor_key(KEY_DOWN);
     game->monitor_key(KEY_ESCAPE);
     game->monitor_key(KEY_SPACE);
+    game->monitor_key(KEY_LEFT_SHIFT);
 
 
 }
-/*class Square{
-public:
-	Square(int x, int y){ //says game is uninitialized in function
-		hop::Game* game;
-		int w = 50;
-		int h = 70;
-		hop::Color color = hop::RED;
-		game->create_rectangle(x, y, w, h, color);
-	}	
-};*/
+
 bool collision(hop::Image* hank, hop::Image* thing);
 bool bunny_grounded(hop::Image *hank, hop::Image* terrain); 
 
@@ -38,21 +30,13 @@ void parse_input_press(hop::Game* game, std::vector<int> keys_pressed, hop::Imag
         if(k==KEY_LEFT){
             hank->move(-30,0);
         }  
-
-        
-        if(k==KEY_SPACE){
-            std::cout << "before flip: " << std::endl;
-            std::cout << "Hank x: " << hank->get_x();
-            std::cout << ", Hank y: " << hank->get_y();
-            std::cout << ", Hank width: " << hank->get_width();
-            std::cout << ", Hank height: " << hank->get_height() << std::endl;
+        if(k == KEY_LEFT_SHIFT){
             hank->flip();
-    /* 
-            std::cout << "After flip: " << std::endl;
-            std::cout << "Hank x: " << hank->get_x();
-            std::cout << ", Hank y: " << hank->get_y();
-            std::cout << ", Hank width: " << hank->get_width();
-            std::cout << ", Hank height: " << hank->get_height();*/
+        }
+        if(k == KEY_SPACE){
+            if(bunny_grounded(hank,terrain)){
+                hank->move(0,70);
+            }
         }
     }
 }
@@ -66,7 +50,7 @@ int main(){
     hop::Color pink={{1.0}, {0.4}, {0.7}};
     game.set_window_size(game.get_resolution_height(),game.get_resolution_height());
     game.run();
-    
+    hop::TextBox Title(100,700,2,hop::RED,"Welcome to Bunny Game!");
     // Custom colours
     hop::Color orange={{0.9}, {0.5}, {0.0}};
     hop::Color light_pink={{1}, {0.76}, {0.9}};
