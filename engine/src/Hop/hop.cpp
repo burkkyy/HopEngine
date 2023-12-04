@@ -21,6 +21,7 @@ bool Game::set_window_size(int width, int height){
 void Game::run(){
     graphics_engine->run(fullscreen);
     keyboard = std::make_shared<Keyboard>(graphics_engine->get_glfw_window());
+    audio_engine.init();
 }
 
 int Game::get_resolution_width(){
@@ -40,13 +41,21 @@ void Game::update(){
         this->stop();
         return;
     }
+
     std::chrono::steady_clock::time_point beginning = std::chrono::steady_clock::now();
+ 
     std::chrono::steady_clock::time_point end = beginning + std::chrono::milliseconds(20);
     graphics_engine->update();
     
     std::chrono::steady_clock:: time_point intermediate = std::chrono::steady_clock::now();
-    std::chrono::duration<double> wait_time = std::chrono::duration_cast<std::chrono::duration<double>>(end - intermediate);
+    std::chrono::duration<double> wait_time = std::chrono::duration_cast<std::chrono::duration<double>>(end - intermediate);  
     std::this_thread::sleep_for(wait_time);
+
+    /*
+    std::chrono::steady_clock::time_point measured_end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(measured_end - beginning);  
+    std::cout << "Elapsed time: " << 1000*elapsed.count()  << " ms"<< std::endl;
+    */
 }
 
 void Game::set_fullscreen(){
@@ -101,6 +110,11 @@ Circle Game::create_circle(int x, int y, int radius, Color color){
 Triangle Game::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color){
     return graphics_engine->create_triangle(v1x,v1y,v2x,v2y,v3x,v3y,color);
 }
+
+Sound Game:: create_sound(const char* file_name, bool loop_sound){
+    return audio_engine.create_sound(file_name, loop_sound);
+}
+
 
 Image::Image(int x, int y,int width, int height){
     this->x = x;

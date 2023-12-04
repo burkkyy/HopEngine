@@ -1,4 +1,4 @@
-
+#pragma once
 #ifndef miniaudio_h
 #define miniaudio_h
 
@@ -75171,6 +75171,7 @@ MA_PRIVATE ma_bool32 ma_dr_wav_init__internal(ma_dr_wav* pWav, ma_dr_wav_chunk_p
         }
         if (isProcessingMetadata) {
             ma_uint64 metadataBytesRead;
+            metadataBytesRead = metadataBytesRead;
             metadataBytesRead = ma_dr_wav__metadata_process_chunk(&metadataParser, &header, ma_dr_wav_metadata_type_all_including_unknown);
             MA_DR_WAV_ASSERT(metadataBytesRead <= header.sizeInBytes);
             if (ma_dr_wav__seek_from_start(pWav->onSeek, cursor, pWav->pUserData) == MA_FALSE) {

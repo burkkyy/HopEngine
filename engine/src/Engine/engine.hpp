@@ -64,7 +64,6 @@ private:
     Color color;
     std::shared_ptr<Object> object;
 
-
 };
 
 /**

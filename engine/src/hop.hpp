@@ -18,6 +18,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <Audio/audio.hpp>
 #include <vector>
 #include <iostream>
 #include <chrono>
@@ -28,7 +29,7 @@ typedef std::shared_ptr<hop::EngineRectangle> Rectangle;
 typedef std::shared_ptr<hop::EngineCircle> Circle;
 typedef std::shared_ptr<hop::EngineGameObject> Triangle;
 typedef std::shared_ptr<hop::EngineGameObject> GameObject;
-
+typedef std::shared_ptr<hop::AudioEngine::EngineSound> Sound;
 // Colors objects can be set to
 #define RED Color{1.0f, 0.0f, 0.0f}
 #define GREEN Color{0.0f, 1.0f, 0.0f}
@@ -49,11 +50,10 @@ class Game{
     void run();
     int get_resolution_width();
     int get_resolution_height();
-
     Rectangle create_rectangle(int x, int y, int width, int height, Color color);
     Circle create_circle(int x, int y, int radius, Color color);
     Triangle create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
-
+    Sound create_sound(const char* file_name, bool loop_sound);
     bool is_running();
     void update();
     bool monitor_key(int key_code);
@@ -63,13 +63,12 @@ class Game{
     bool key_pressed(int key);
     bool key_held(int key);
     bool key_released(int key);
-
     void stop();
     std::vector<int> get_pressed_keys();
     std::vector<int> get_held_keys();
     std::vector<int> get_released_keys();
-    
     private:
+    AudioEngine audio_engine;
     std::shared_ptr<Engine> graphics_engine;
     std::shared_ptr<Keyboard> keyboard;
     bool engine_stopped = false;

@@ -1,3 +1,4 @@
+
 #include "hop.hpp"
 #include <iostream>
 
@@ -60,23 +61,28 @@ int main(){
     hank.create_circle (0,15,10,hop::WHITE); //bunny tail
     hank.create_rectangle(20,0,10,10,hop::WHITE); //bunny back feet
     hank.create_rectangle(60,0,10,10,hop::WHITE); //bunny front feet
+    
+    hop::Sound boing = game.create_sound("boing.wav", false);
 
-   // Square newSquare(100, 1100);
     monitor_keys(&game);
-    float falling_duration = 1.0;
+    int timer = 0;
     while(game.is_running()){
         game.update();
+        timer++;
+
         if(game.key_pressed(KEY_ESCAPE)){
             game.stop();
         }
 
         if(game.key_pressed(KEY_SPACE)&&(bunny_grounded(&hank,&stairs))){
+            
             if(hank_right){
                 hank.move(200,100);   
             }
             else{
                 hank.move(-200,100);
             }
+            boing->play();
           }
         
         if(game.key_pressed(KEY_RIGHT)||game.key_held(KEY_RIGHT)){
@@ -100,12 +106,7 @@ int main(){
             hideout.move(1000,0);
         }
         if(!bunny_grounded(&hank,&stairs)){
-            falling_duration += 0.5;
-            int fall_distance = falling_duration * -1;
-            hank.move(0,fall_distance);
-        }
-        else{
-            falling_duration = 0.0;
+            hank.move(0,-10);
         }
     }
 
