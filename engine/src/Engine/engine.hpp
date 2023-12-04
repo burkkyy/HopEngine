@@ -35,7 +35,7 @@ class Engine;
  * Wrapper for Object class for better ease of use
  *
  */
-class GameObject {
+class EngineGameObject {
 public:
     int x;
     int y;
@@ -74,10 +74,7 @@ private:
  * kind of GameObject is being created 
  *
  */
-class Rectangle : public GameObject {
-public:
-
-};
+class EngineRectangle : public EngineGameObject {};
 
 /**
  * @brief Wrapper class for GameObject
@@ -86,11 +83,10 @@ public:
  * kind of GameObject is being created 
  *
  */
-class Circle : public GameObject {
+class EngineCircle : public EngineGameObject {
 public:
     int radius = 0;
 };
-
 
 /** 
  * @brief Plugin for Engine
@@ -240,7 +236,7 @@ public:
      * @param color The color of the square
      * @return pointer to created square object
      */
-std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height, Color color);
+std::shared_ptr<EngineRectangle> create_rectangle(int x, int y, int width, int height, Color color);
     
     /**
      * @brief creates a triangle
@@ -254,7 +250,7 @@ std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height,
      * @param color The color of the triangle
      * @return pointer to created object
      */
-    std::shared_ptr<GameObject> create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
+    std::shared_ptr<EngineGameObject> create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
     
     /**
      * @brief creates a circle
@@ -268,7 +264,7 @@ std::shared_ptr<Rectangle> create_rectangle(int x, int y, int width, int height,
      * @param color The color of the circle
      * @return pointer to created circle object
      */
-    std::shared_ptr<Circle> create_circle(int x, int y, int radius, Color color);
+    std::shared_ptr<EngineCircle> create_circle(int x, int y, int radius, Color color);
     bool window_open = true;
     std::shared_ptr<Window> window;
 
@@ -286,5 +282,6 @@ private:
     std::vector<std::shared_ptr<EnginePlugin>> plugins;
 
 };
+
 
 }
