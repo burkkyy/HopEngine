@@ -114,7 +114,7 @@ std::vector<char> Pipeline::read_file(const std::string& fp){
     std::ifstream f(fp, std::ios::ate | std::ios::binary);
     if(!f.is_open()){ VK_ERROR("failed to open file: " + fp); }
 
-    size_t size = (size_t)f.tellg();
+    size_t size = static_cast<size_t>(f.tellg());
     std::vector<char> buffer(size);
 
     f.seekg(0);

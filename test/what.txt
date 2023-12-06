@@ -1,0 +1,111 @@
+test.cpp: In lambda function:
+test.cpp:48:28: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+   48 |   TEST_ASSERT(extent.width == 100 && extent.height == 100);
+      |                            ^~
+test.cpp:25:28: note: in definition of macro 'TEST_ASSERT'
+   25 | #define TEST_ASSERT(b) if(!b){ TEST_FAIL(); throw 1; }
+      |                            ^
+test.cpp:25:27: note: add parentheses around left hand side expression to silence this warning
+   25 | #define TEST_ASSERT(b) if(!b){ TEST_FAIL(); throw 1; }
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   26 | 
+      |                            
+   27 | void RUN_TEST(const char* msg, std::function<void()> func){
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   28 |  TEST_START(msg);
+      |  ~~~~~~~~~~~~~~~~          
+   29 |  try {
+      |  ~~~~~                     
+   30 |   func();
+      |   ~~~~~~~                  
+   31 |   TEST_OK();
+      |   ~~~~~~~~~~               
+   32 |  } catch(std::exception& e){
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   33 |   TEST_FAIL();
+      |   ~~~~~~~~~~~~             
+   34 |   std::cout << e.what() << std::endl;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   35 |  }
+      |  ~                         
+   36 | }
+      | ~                          
+   37 | 
+      |                            
+   38 | int main(int argc, const char** argv){
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   39 |     (void)argc;
+      |     ~~~~~~~~~~~            
+   40 |     (void)argv;
+      |     ~~~~~~~~~~~            
+   41 |  using namespace hop;
+      |  ~~~~~~~~~~~~~~~~~~~~      
+   42 | 
+      |                            
+   43 |  MSG("Starting testing.");
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~ 
+   44 | 
+      |                            
+   45 |  RUN_TEST("Testing window", [](){
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   46 |   auto* window = new Window(100, 100);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   47 |   VkExtent2D extent = window->get_extent();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   48 |   TEST_ASSERT(extent.width == 100 && extent.height == 100);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~ 
+test.cpp:48:3: note: in expansion of macro 'TEST_ASSERT'
+   48 |   TEST_ASSERT(extent.width == 100 && extent.height == 100);
+      |   ^~~~~~~~~~~
+test.cpp:48:28: warning: comparison of constant '100' with boolean expression is always false [-Wbool-compare]
+   25 | #define TEST_ASSERT(b) if(!b){ TEST_FAIL(); throw 1; }
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   26 | 
+      |                             
+   27 | void RUN_TEST(const char* msg, std::function<void()> func){
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   28 |  TEST_START(msg);
+      |  ~~~~~~~~~~~~~~~~           
+   29 |  try {
+      |  ~~~~~                      
+   30 |   func();
+      |   ~~~~~~~                   
+   31 |   TEST_OK();
+      |   ~~~~~~~~~~                
+   32 |  } catch(std::exception& e){
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   33 |   TEST_FAIL();
+      |   ~~~~~~~~~~~~              
+   34 |   std::cout << e.what() << std::endl;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   35 |  }
+      |  ~                          
+   36 | }
+      | ~                           
+   37 | 
+      |                             
+   38 | int main(int argc, const char** argv){
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   39 |     (void)argc;
+      |     ~~~~~~~~~~~             
+   40 |     (void)argv;
+      |     ~~~~~~~~~~~             
+   41 |  using namespace hop;
+      |  ~~~~~~~~~~~~~~~~~~~~       
+   42 | 
+      |                             
+   43 |  MSG("Starting testing.");
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~  
+   44 | 
+      |                             
+   45 |  RUN_TEST("Testing window", [](){
+      |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   46 |   auto* window = new Window(100, 100);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   47 |   VkExtent2D extent = window->get_extent();
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   48 |   TEST_ASSERT(extent.width == 100 && extent.height == 100);
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+test.cpp:25:28: note: in definition of macro 'TEST_ASSERT'
+   25 | #define TEST_ASSERT(b) if(!b){ TEST_FAIL(); throw 1; }
+      |                            ^
