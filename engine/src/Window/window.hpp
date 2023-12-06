@@ -11,7 +11,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
+#include <iostream>
 namespace hop {
 
 /**
@@ -30,7 +30,7 @@ public:
      * @param w Width of the window
      * @param h Height of the window
      */
-    Window(int w, int h);
+    Window(const char* w_name);
     
     /**
      * @brief Default Deconstructor
@@ -51,7 +51,9 @@ public:
      *
      * @return If window closed
      */
-    bool should_close(){ return glfwWindowShouldClose(win); }
+    bool should_close(){ 
+        return glfwWindowShouldClose(win); 
+    }
     
     /**
      * @brief Dimensions of window
@@ -85,15 +87,25 @@ public:
      * @return void
      */
     void reset_window_resized_flag(){ framebuffer_resized = false; }
+    void Initialize(bool fullscreen);
+    int get_resolution_width();
+    int get_resolution_height();
+    void set_window_size(int x, int y);
+    GLFWwindow* get_glfw_window();
+    bool window_open;
 
 private:
-    static void framebuffer_resize_callback(GLFWwindow* win, int width, int height);
     
+    static void framebuffer_resize_callback(GLFWwindow* win, int width, int height);
+    void get_screen_resolution();
     bool framebuffer_resized = false;
     int width;
     int height;
-    const char* window_name = "bunny sim";
+    int resolution_width;
+    int resolution_height;
+    const char* window_name;
     GLFWwindow* win;
+
 };
 
 }

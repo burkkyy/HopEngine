@@ -10,45 +10,38 @@
  */
 
 #pragma once
-
+#define GLFW_INCLUDE_VULKAN
+#include <hop.hpp>
 #include <GLFW/glfw3.h>
 #include <vector>
-
 namespace hop{
+class Game;
 
-/* Keyboard class is responsible for accepting keyboard input from user. Keys are bound to callback functions 
- * and the provided function is called when the button is pressed or held. 
- *
- * Usage:   1.) Create keyboard object by providing GLFWwindow* object using the sole constructor. 
- *      2.) Create a void function with no parameters and bind it to a key. 
- * */
 class Keyboard{
 
-    private:
-    // GLFWwindow* object is needed to implement GLFW callback-style input.
-    GLFWwindow* window; 
-    // Key callback function is required by GLFW (with these parameters) to handle input callbacks.
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    // Inner class Key contains a key and corrosponding callback function.
-    struct Key{
-        public:
-        int code; // The key code as defined by GLFW.
-        void (*function)(); // Function pointer to a void function with no parameters. 
-        Key(char c, void (*Ptr)()); // Constructor using char as parameter, works for alphanumeric symbols.
-        Key(int code, void (*Ptr)()); // Constructor using GLFW key codes, can work for all keys.
-    };
-    // Vector bindings contains all keys which have been bound.
-    static std::vector<Key> bindings;
+
 
     public:
-    // Necessary GLFW window object.
     Keyboard(GLFWwindow* window);
-    // Bind a GLFW key code to a void function with no parameters.
-    void bind(int code, void (*Ptr)());
-    // Bind a character (and it's opposite-case character) to a void function with no parameters.
-    void bind(char c, void (*Ptr)());   
-    // Bind a c-style string (eg "left", "space", "tab" to a void function with no parameters.
-    bool bind(const char* key_str, void (*Ptr)());
+    bool monitor_key(int key);
+    bool key_pressed(int key);
+    bool key_held(int key);
+    bool key_released(int key);
+
+    std::vector<int> get_pressed_keys();
+    std::vector<int> get_held_keys();
+    std::vector<int> get_released_keys();
+
+
+    private:
+    GLFWwindow* window; 
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    inline static std::vector<int> keys_monitored;
+    inline static std::vector<int> keys_pressed;
+    inline static std::vector<int> keys_held;
+    inline static std::vector<int> keys_released;
+
 };
 
 }

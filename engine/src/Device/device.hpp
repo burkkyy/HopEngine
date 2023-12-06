@@ -220,6 +220,9 @@ public:
     
     VkPhysicalDeviceProperties properties;
 
+    VkDevice get_vk_device();
+    VkPhysicalDeviceProperties get_VkPhysicalDeviceProperties();
+
 private:
     /* Functions for the vulkan debugger */
     void populate_debug_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT&);
