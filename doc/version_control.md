@@ -1,11 +1,32 @@
 # Version Control
+Our teams chosen version control will be done through Git, and hosted on Github. The current stable build of our engine we live in the `main` branch.
 
-## GitHub
+## Contributing
+Those looking to contribute to the repo must create their own seperate branch off of main. This branch must have the following naming convention: `TYPE-NAME`. 
 
-Our team will use GitHub to manage the version control of our project. We have created a central repository called HopHopEngine that all of the team members have cloned. Each team member has created their own dev branch to work from in their name, and will merge to the main branch when significant changes have been made.
+For example, Bob wants to contribute on the engine. So his branch would be: `dev-bob`. If bob wanted to contribute documentaion, his branch would be: `doc-bob`.
 
-## Pushing to Repo
+## Merging changes into production
+The first step in merging changes onto the `main` branch is ensuring a contributer's branch is up to date with the current stable release(i.e `main`). Once up to date, a contributer must perform the following steps:
 
-When each group member is ready to push from their cloned copy to the repo, the protocol is to first pull from the repository to ensure their local copy is up to date before sending a message on discord that they're ready to push. To limit issues with merging to main, each team member will ensure to push after changing no more than 5-10 files. In addition, team members will ensure to regularly pull from main throughout the development process to keep their branch updated. 
+1. Merge contributor's branch into `dev` and resolve any merge conflicts.
+2. Push `dev` onto remote (i.e github)
+3. Create a pull request to initiate a review of the changes.
+4. Make any necessary revisions based on feedback from the reviewers (See Pull Requests for more)
+5. After approval from the reviewers, the changes on `dev` will be merged into the `main` branch with the contributors branch deleted
 
-After being notified, Caleb and/or Indigo will let the team member know if it's okay to push their changes. If approval is given to push their changes, the team member will execute the push before going to GitHub in their browser to create a pull request to initiate the merge of their dev branch to main. The repository is set up in such a way that 2 approvals are required by Caleb and Indigo before the merge is conducted so as to ensure total approval of the changes and little opportunity for conflicting pushes.
+> If the `dev` branch currently does not exist, create it off of the `main` branch.
+
+## Pull Requests
+All contributions integrating into `main` must be done through a Github pull request. A pull request is a necessary step for the team to review changes before merged into the `main` branch. For a pull requests to be closed it must be accepted from all the reviewers.
+
+## Reviewers
+Caleb Burke
+Indigo Stusek
+
+## Standards
+Contributors are expected to adhere to all our standards found in `doc/standards.md`.
+
+## Reporting Issues
+If you find any issues, please open an issue on Github providing a description of the issue and how to reproduce it.
+
