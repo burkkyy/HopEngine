@@ -1,14 +1,11 @@
 __pycache__/
-build/
 .vscode/
 
 # Object/build files
 *.o
 *.out
-*.spv
 
 # Linux files
-*.a
 *.bin
 
 # Other misc files

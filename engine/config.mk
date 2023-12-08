@@ -3,5 +3,5 @@
 
 CC = g++
 AR = ar
-CFLAGS = -std=c++17 -O2 -Wall -Wextra -I src/ -I /usr/local/include -L /usr/local/lib
+CFLAGS = -std=c++17 -O2 -Wall -Wextra -I src/ -I /usr/local/include -L /usr/local/lib -I ext_lib
 LDFLAGS = -lglfw3 -lvulkan -ldl
