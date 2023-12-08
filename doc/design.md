@@ -137,6 +137,7 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 ├── buildenv
 │   └── Dockerfile
 ├── doc
+│   ├── UserManual.md
 │   ├── build.md
 │   ├── design.md
 │   ├── diagrams
@@ -148,23 +149,40 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │   │   ├── project_updates_phase1.md
 │   │   ├── project_updates_phase3.md
 │   │   ├── project_updates_phase4.md
-│   │   └── project_updates_phase5.md
+│   │   ├── project_updates_phase5.md
+│   │   └── project_updates_phase6.md
 │   ├── specifications.md
 │   ├── standards.md
 │   └── version_control.md
 ├── engine
 │   ├── Makefile
+│   ├── build
+│   │   ├── lib
+│   │   │   └── libHopHopEngine.a
+│   │   └── shaders
+│   │       ├── shader.frag.spv
+│   │       └── shader.vert.spv
 │   ├── config.mk
+│   ├── ext_lib
+│   │   ├── GLFW
+│   │   ├── glm
+│   │   └── miniaudio
+│   │       └── miniaudio.h
 │   ├── shaders
 │   │   ├── shader.frag
 │   │   └── shader.vert
 │   └── src
+│       ├── Audio
+│       │   ├── audio.cpp
+│       │   └── audio.hpp
 │       ├── Device
 │       │   ├── device.cpp
 │       │   └── device.hpp
 │       ├── Engine
 │       │   ├── engine.cpp
 │       │   └── engine.hpp
+│       ├── Hop
+│       │   └── hop.cpp
 │       ├── Input
 │       │   ├── input.cpp
 │       │   └── input.hpp
@@ -175,6 +193,8 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       │   ├── pipeline.cpp
 │       │   └── pipeline.hpp
 │       ├── Render_Systems
+│       │   ├── image_render_system.cpp
+│       │   ├── image_render_system.hpp
 │       │   ├── object_render_system.cpp
 │       │   └── object_render_system.hpp
 │       ├── Renderer
@@ -188,14 +208,17 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       ├── Window
 │       │   ├── window.cpp
 │       │   └── window.hpp
+│       ├── definitions.hpp
 │       └── hop.hpp
-└── example
-    ├── moving_shapes
+└── projects
+    ├── final_demo
     │   ├── Makefile
-    │   └── app.cpp
-    └── simple_shapes
+    │   ├── app.cpp
+    │   └── sounds
+    └── pong
         ├── Makefile
-        └── app.cpp
+        ├── app.cpp
+        └── sounds
 
 ```
 
@@ -576,14 +599,14 @@ The `Window` directory will contain `window.cpp` and `window.hpp`
 Class `Window` will contain the following publicly callable functions:
 
 > ```cpp
-> 	Window(int w, int h)
+> 	Window(int width, int height)
 > ```
 > 
 > _Constructor for the `Window` class_
 > 
 > Parameters
-> - `w` The width of the screen
-> - `h` the height of the screen
+> - `width` The width of the screen
+> - `height` the height of the screen
 > 
 
 $~$

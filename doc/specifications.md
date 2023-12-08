@@ -1,10 +1,9 @@
-## Product Overview
+# Specifications
 
-We intend to create Hop Engine, a lightweight, low-level and open-source two-dimensional game engine in C++ which we would like to make available on Vancouver Island University (VIU) Linux machines. The engine will interface with the Vulkan graphics API and provide a much simpler code library for programmers to interact with than is otherwise available. Our goal is to create a software library that will allow aspiring programmers to transition from the command line into basic graphical game design with a minimal learning curve.
+## Product Overview
+Hop Engine is a lightweight, low-level, open-source, and two-dimensional game engine in C++, which can run on Vancouver Island University (VIU) Linux machines. The engine will interface with the Vulkan graphics API and provide a much simpler code library for programmers to interact with than is otherwise available. Our goal is to create a software library that will allow aspiring programmers to transition from the command line into basic graphical game design with a minimal learning curve.
 
 Our engine will support only the essential graphics rendering, input handling, and other necessary features. As much game-specific logic as possible will be left to the programmer. Through this design philosophy, we hope the programmer can spend more time programming in familliar C++ and less time learning engine-specific code.
-
-After developing this engine, we will create a playable game using our engine to demonstrate it's viability. The development and implementation of this game will also allow us to de-bug and refine our engine. 
 
 ## Product Behaviour and Features
 
@@ -12,109 +11,76 @@ As a C++ game-engine library, Hop allows user-programmers to handle graphics, so
 
 Here is a summary of some key classes and functions in our API.
 
-#### Engine (class)
+#### Window (class)
 
-The central user-accessible class. Instantiating an Engine object and using the provided methods is how the user sets game parameters and describes the behaviour to be displayed to game players. 
+The first step to creating any game is to create a window in which the game will reside.
 
  To generate a window,the user instantiates our Window class using the following syntax:
+ 
+> *Game my_window("My Game's Name!");*
+>*my_window.set_fullscreen();*
 
-> *Engine game_engine ("Hello World!",1200,800);*
-> *game_engine.run();*
+This code will create a fullscreen window called "My Game's Name!".
+After the window has been given a name, the user can also set the size of the window by doing the following:
 
-This code will create a 1200 x 800 pixel non-fullscreen window entitled "Hello World!" and launch the game. 
+>*.set_window_size(1200, 1800);*
 
-After creating their window, the user can apply a background image using the set_background method:
+This will create a 1200 pixel by 1800 pixel window on the screen.
 
-> *game_engine.set_background("my_background.png");*
-
-This code will render a texture located in *image/my_background.png* as a background image spanning the entire window. 
-
-The user can clear the current window of all rendered graphics using the clear method:
-
-> *game_engine.clear();*
+> *my_window.clear();*
 
 Lastly, when the user is finished with their graphics window, they can close it by calling the close method:
 
-> *game_engine.close();*
+> *my_window.close();*
 
-#### Image (class)
+#### TextBox (class)
 
-After the user has created their window, they can use the image class to begin displaying graphics on the screen. As the name suggests, an image object is used to render an image file onto a particular location in the graphics window.
+The TextBox class will render supplied text on the screen by placing text within a larger box to hold the characters.
 
-An image object can be created using the following syntax: 
-
-> *Image my_image("cool_image.png",128,128,400,200,2);*
-> *game_engine.display(my_image);*
-Where the parameters are as follows:
-1. The name of the file within the *assets/img/images/* directory.
-2. The horizontal dimensions of the image in pixels.
-3. The vertical dimensions of the image in pixels.
-4. The horizontal distance between the left edge of the image and the left side of the window.
-5. The vertical distance between the bottom edge of the image and the bottom of the window.
-6. The layer upon which the image resides, which determines the overlap between graphical elements in the z plane. Since this Image has a layer index of 2, it will overlap images with indexes of 0 and 1 and will be overlapped by any image with a layer index of 3 or more.
-
-#### Character (class)
-
-Character is a class that represents a moveable character within the game. Similar to an Image object, a Character has a size and position within the window. Unlike an Image object, which is a static image within the window, the character class can be also animated by changing the texture asset that is rendered on the character.
-
-A Character object can be instantiated using the following code: 
-
-> *Character my_character("my_character.png",64,64,64,64,3);*
+> *Text my_text(200, 800, 2, BLACK, "Hello World!");*
 
 Where the parameters are as follows:
-1. The initial image asset to be rendered upon the character.
-2. The horizontal dimensions of the character in pixels.
-3. The vertical dimensions of the character in pixels.
-4. The horizontal distance between the left edge of the character's intitial position and the left side of the window.
-5. The vertical distance between the bottom edge of the character's initial position and the bottom of the window.
-6. The layer upon which the image resides, which determines the overlap between graphical elements in the z plane. Since this Image has a layer index of 3, it will overlap images with indexes of 0 - 2 and will be overlapped by any image with a layer index of 4 or more.
-
-Once created, a Character object can be animated by changing the image asset which is rendered on it.
-
-> *my_character.set_image("my_character_run.png");*
-
-These texture swaps can also be performed automatically, such as when a Character moves in a particular direction:
-
-> *my_character.move_x(20);*
-
-Will move the character 20 pixels horizontally to the right. By calling set_image from within move_x, a user could load an image asset depending on which direction the character was moving. 
-
-#### Text (class)
-
-Text class will render supplied text on the screen and can be used as follows:
-
-> *Text my_text("Hello World!", 2, 200, 800, BLACK);*
-
-Where the parameters are as follows:
-1. The text to be displayed on the screen
+1. The x coordinate of the bottom left vertex of the box
+2. The y coordinate of the bottom left vertex of the box
 2. The font size, represented by an integer between 1 and 3 with 1 as the smallest and 3 the largest.
-3. The horizontal distance between the left side of the window and the left edge of the text box.
-4. The vertical distance between the bottom of the window and the bottom of the text box.
 5. The colour of the text to be displayed.
+6. The string of text to be displayed
 
-#### Sound (class)
+## Input (class)
+There are several functions within this class to track which keys have been used and how. KEY_CODE is the code attached to each key in the definitions.hpp file.
 
-A Sound class object represents a sound file and allows it to be played repeatedly. 
+Inorder to be able to use the following functions key's must be tracked using the function call:
+#### void monitor_key(KEY_CODE);
 
-> *Sound death_sound("you_died.wav");*
+#### bool key_pressed(KEY_CODE)
+This returns true to indicate that a supplied key has been pressed. The user can handle this information as they wish.
 
-Will create a sound object correlated to the file you_died.wav located at /sounds/you_died.wav when navigated from the project root directory.
+#### bool key_held(KEY_CODE)
+This returns true to indicate that a supplied key has been held. The user can handle this information as they wish.
 
-#### void Engine::bind(const char* key name,void (*Ptr)()) (function)
+#### bool key_released(KEY_CODE)
+This returns true to indicate that a supplied key has been released. The user can handle this information as they wish.
 
-This function will bind a key to a previously-defined void function. When the supplied key is pressed, the provided function is called. This function makes use of a function pointer, which is supplied as the second argument of this function. 
+## AudioEngine (class)
+Hop uses the MiniAudio library, an audioplayback and capture library, to produce sound. The user can add sound to their game calling functions within the AudioEngine class.
 
-> *game_engine.bind("ENTER", Jump);*
+The user can play an audio file by using the following syntax:
+*hop::sound dave_is_a_star = create_sound("party_in_the_usa_wessels_cover", true)*
+dave_is_a_star->play() will play the music
+dave_is_a_star->pause() will pause the music
 
-Will cause a previously declared void function with no parameters called *Jump* to be called when the player inputs the enter key.
+Where the parameters are as follows:
+1. The filename in the form of a string
+2. The loop status of the audiofile; true to loop, false to not loop
 
-#### void Engine::play_sound(Sound) (function)
+#### void play_sound (function)
 
-play_sound is a member function of Engine that plays a previously created sound file.
+play_sound is a function that will play an audio file located within the designated asset directory by specifying the file name. For example:
 
-> *game_engine.play_sound(mySound);*  
+> *play_sound("sound_1.wav");*  
 
-Will play the sound file associated with the mySound object if such a file exists in assets/sound.
+Will play the sound file *sound_1.wav* from the directory *assets/sound* if such a file exists in that directory.  
+
 ## Target Users and Scenarios
 
 The target user for Hop Engine is an aspiring programmer with some experience with the C++ programming language. In the context of VIU, we hope our library would be accessible to a second-year computer science student. Such a user would likely be comfortable writing code for command-line applications, but may have little experience creating more complex development environments or using non-standard libraries. 

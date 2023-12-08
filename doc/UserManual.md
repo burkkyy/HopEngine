@@ -175,7 +175,7 @@ While user's can create instances of game objects directly in the game as descri
 
 ## User Input
 
- In order for a game to accept input the user must call the `monitor_key` function on any |keys they are expecting to receive input through. This is done using the syntax `game->monitor_key(KEY_RIGHT);` where `KEY` is the tag for the relevant key in the definitions.hpp file. A table of these |key tags is included in this document in [Appendix A](#appendix-a).
+ In order for a game to accept input the user must call the `monitor_key` function on any |keys they are expecting to receive input through. This is done using the syntax `game->monitor_key(KEY);` where `KEY` is the tag for the relevant key in the definitions.hpp file. A table of these |key tags is included in this document in [Appendix A](#appendix-a).
 
 Once the user has set a key to be monitored the engine can detect input and the user can catch that input with the following functions.
     `game.key_pressed(KEY);` Will return a bool whether the key was pressed or not. KEY is the tag for the relevant key.
