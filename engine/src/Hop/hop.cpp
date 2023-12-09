@@ -5,22 +5,37 @@
 #include <memory>
 #include <algorithm>
 #include <ctype.h>
+#include <stdexcept>
 using namespace hop;
 
 Game::Game(const char* window_name){
     graphics_engine = std::make_shared<Engine>(window_name);
     Image::set_game(this);
-
-
 }
 
 bool Game::set_window_size(int width, int height){
-    return graphics_engine->set_window_size(width, height);
+    
+    if((width<100) && (height<100)){
+        console_warning("Game::set_window_size", "Width and height are less than 100 pixels.");
+        return false;
+    }
+    else if(width<100){
+        console_warning("Game::set_window_size", "Width is less than 100 pixels.");
+        return false;
+    }
+    else if(height<100){
+        console_warning("Game::set_window_size", "Height is less than 100 pixels.");
+        return false;
+    }
+    else{
+        return graphics_engine->set_window_size(width, height);
+    }
 }
 
 void Game::run(){
     graphics_engine->run(fullscreen);
     keyboard = std::make_shared<Keyboard>(graphics_engine->get_glfw_window());
+    initialize_valid_keys();
     audio_engine.init();
 }
 
@@ -43,19 +58,12 @@ void Game::update(){
     }
 
     std::chrono::steady_clock::time_point beginning = std::chrono::steady_clock::now();
- 
     std::chrono::steady_clock::time_point end = beginning + std::chrono::milliseconds(20);
     graphics_engine->update();
-    
     std::chrono::steady_clock:: time_point intermediate = std::chrono::steady_clock::now();
     std::chrono::duration<double> wait_time = std::chrono::duration_cast<std::chrono::duration<double>>(end - intermediate);  
     std::this_thread::sleep_for(wait_time);
 
-    /*
-    std::chrono::steady_clock::time_point measured_end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(measured_end - beginning);  
-    std::cout << "Elapsed time: " << 1000*elapsed.count()  << " ms"<< std::endl;
-    */
 }
 
 void Game::set_fullscreen(){
@@ -68,24 +76,118 @@ void Game::set_windowed(){
 }
 
 bool Game::monitor_key(int key){
-    return keyboard->monitor_key(key);
+    bool key_valid = false;
+    for(int i:valid_keys){
+        if(i==key){
+            key_valid = true;
+            break;
+        }
+    }
+    if(!key_valid){
+        console_warning("Game::monitor_key()", "Invalid key provided. Please refer to definitions.hpp for all valid keys.");
+    }
+    return (key_valid)&&(keyboard->monitor_key(key));
 }
 
 bool Game::key_pressed(int key){
-    return keyboard->key_pressed(key);
+    bool key_valid = false;
+    for(int i:valid_keys){
+        if(i==key){
+            key_valid = true;
+            break;
+        }
+    }
+    if(!key_valid){
+        console_warning("Game::key_pressed()", "Invalid key provided. Please refer to definitions.hpp for all valid keys.");
+    }
+    return (key_valid)&&(keyboard->key_pressed(key));
 }
 
 bool Game::key_held(int key){
-    return keyboard->key_held(key);
+    bool key_valid = false;
+    for(int i:valid_keys){
+        if(i==key){
+            key_valid = true;
+            break;
+        }
+    }
+    if(!key_valid){
+        console_warning("Game::key_held()", "Invalid key provided. Please refer to definitions.hpp for all valid keys.");
+    }
+    return (key_valid)&&(keyboard->key_held(key));
 }
 
 bool Game::key_released(int key){
-    return keyboard->key_released(key);
+
+    bool key_valid = false;
+    for(int i:valid_keys){
+        if(i==key){
+            key_valid = true;
+            break;
+        }
+    }
+    if(!key_valid){
+        console_warning("Game::key_released()", "Invalid key provided. Please refer to definitions.hpp for all valid keys.");
+    }
+
+    return (key_valid)&&(keyboard->key_released(key));
 }
 
 void Game::stop(){
     engine_stopped = true;
 }
+
+void Game::initialize_valid_keys(){
+
+    valid_keys.push_back(32);
+    for(int i = 49; i<58;i++){
+        valid_keys.push_back(i);
+    }
+    valid_keys.push_back(59);
+    valid_keys.push_back(61);
+   for(int i = 65; i<94;i++){
+        valid_keys.push_back(i);
+   }
+    valid_keys.push_back(256);
+    valid_keys.push_back(257);
+    valid_keys.push_back(258);
+    valid_keys.push_back(259);
+    valid_keys.push_back(260);
+    valid_keys.push_back(262);
+    valid_keys.push_back(263);
+    valid_keys.push_back(264);
+    valid_keys.push_back(265);
+    valid_keys.push_back(280);
+    valid_keys.push_back(290);
+    valid_keys.push_back(291);
+    valid_keys.push_back(292);
+    valid_keys.push_back(293);
+    valid_keys.push_back(294);
+    valid_keys.push_back(295);
+    valid_keys.push_back(296);
+    valid_keys.push_back(297);
+    valid_keys.push_back(298);
+    valid_keys.push_back(299);  
+    valid_keys.push_back(300);  
+    valid_keys.push_back(301);  
+    valid_keys.push_back(320);
+    valid_keys.push_back(321);
+    valid_keys.push_back(322);
+    valid_keys.push_back(323);
+    valid_keys.push_back(324);
+    valid_keys.push_back(325);
+    valid_keys.push_back(326);
+    valid_keys.push_back(327);
+    valid_keys.push_back(328);
+    valid_keys.push_back(329);  
+    valid_keys.push_back(340);  
+    valid_keys.push_back(341);  
+    valid_keys.push_back(342);
+    valid_keys.push_back(344);
+    valid_keys.push_back(345);  
+    valid_keys.push_back(346);  
+}
+
 
 std::vector<int> Game::get_pressed_keys(){
     return keyboard->get_pressed_keys();
@@ -100,10 +202,29 @@ std::vector<int> Game::get_released_keys(){
 }
 
 Rectangle Game::create_rectangle(int x, int y, int width, int height, Color color){
+    if((width<1)&&(height<1)){
+        console_warning("Game::create_rectangle()", "Width and height are less than 1");
+        return nullptr;
+    }
+    else if(width<1){
+        console_warning("Game::create_rectangle()", "Width is less than 1");
+        return nullptr;
+    }
+    else if(height<1){
+        console_warning("Game::create_rectangle()", "Height is less than 1");
+        return nullptr;
+    }
+    else{
     return graphics_engine->create_rectangle(x, y, width, height, color);
+
+    }
 }
     
 Circle Game::create_circle(int x, int y, int radius, Color color){
+    if(radius<1){
+        console_warning("Game::create_circle()", "Radius is less than 1.");
+        return nullptr; 
+    }
     return graphics_engine->create_circle(x,y,radius,color);
 }
 
@@ -112,11 +233,31 @@ Triangle Game::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int 
 }
 
 Sound Game:: create_sound(const char* file_name, bool loop_sound){
-    return audio_engine.create_sound(file_name, loop_sound);
+    
+    Sound return_sound = audio_engine.create_sound(file_name, loop_sound);
+    if(return_sound == NULL){
+        console_warning("Game::create_sound()", 
+        "Sound could not be intialized. Verify that file is correctly named and located in project/sounds.");
+    }
+    return return_sound;
+}
+
+void Game::console_warning(const char* function, const char* error_msg){
+    std::cout << "WARNING: Error in " << function << "." << std::endl;
+    std::cout << "\t" << error_msg << std::endl << std::endl;
 }
 
 
 Image::Image(int x, int y,int width, int height){
+    if((width<1)&&(height<1)){
+        console_warning("Image::Image()", "Height and width are less than 1.");
+    }
+    else if(width<1){
+        console_warning("Image::Image()", "Width is less than 1.");
+    }
+    else if(height<1){
+        console_warning("Image::Image()", "Height is less than 1.");
+    }
     this->x = x;
     this->y = y;
     this->width = width;
@@ -124,7 +265,21 @@ Image::Image(int x, int y,int width, int height){
 }
 
 bool Image::create_rectangle(int x, int y, int width, int height, Color color){
-    if(((x + width)>this->width)||((y+height)>this->height)){
+    
+    if((width<1)&&(height<1)){
+        console_warning("Image::create_rectangle()", "Height and width are less than 1.");
+        return false;
+    }
+    else if(width<1){
+        console_warning("Image::create_rectangle()", "Width is less than 1.");
+        return false;
+    }
+    else if(height<1){
+        console_warning("Image::create_rectangle()", "Height is less than 1.");
+        return false;
+    }
+    else if(((x + width)>this->width)||((y+height)>this->height)){
+        console_warning("Image::create_rectangle()", "Rectangle falls outside of Image object boundary.");
         return false;
     }
     else{
@@ -135,7 +290,13 @@ bool Image::create_rectangle(int x, int y, int width, int height, Color color){
 
 bool Image::create_circle(int x, int y, int radius, Color color){
     
-    if((x + (2*radius))>this->width){
+    if(radius<1){
+        console_warning("Image::create_circle()", "Radius of circle is less than 1.");
+        return false;
+    }
+
+    else if((x + (2*radius))>this->width){
+        console_warning("Image::create_circle()", "Circle falls outside of Image object boundary.");
         return false;
     }
     else{
@@ -158,6 +319,8 @@ bool Image::create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y
     max_y = std::max(max_y,v3y);
 
     if((min_x<0)||(min_y<0)||((max_x-min_x)>this->width)||((max_y-min_y)>height||(max_x>width)||(max_y>height))){
+        
+        console_warning("Image::create_triangle()", "Triangle falls outside of Image object boundary.");
         return false;
     }
 
@@ -174,6 +337,9 @@ void Image::set_game(Game* g){
 void Image::set_color_all(hop::Color color){
     for(auto obj: game_objects){
         obj->set_color(color);
+    }
+    for(auto i: images){
+        i.set_color_all(color);
     }
 }
 
@@ -193,14 +359,15 @@ void Image::move(int x, int y){
 bool Image::add_image(int x, int y, Image image){
     
     if(((x + image.width)>this->width)||((y + image.height)>this->height)){
+        console_warning("Image::add_image()","Image falls outside of parent Image object boundaries.");
         return false;
     }
     else{
         image.move((this->x - image.x + x), (this->y - image.y + y));
         images.push_back(image);
+        return true;
     }
 
-    return true;
 }
 
 void Image::flip(){
@@ -223,15 +390,32 @@ int Image::get_height(){
     return this->height;
 }
 
-TextBox::TextBox(int x, int y, int text_size, Color text_color, const char* text_string){
-    this->string = text_string;
-    this->text_size = text_size;
-    this->color = text_color;
-    this->stride = 20*text_size;
-    this->place = 0;
+void Image::console_warning(const char* function, const char* error_msg){
+    std::cout << "WARNING: Error in " << function << "." << std::endl;
+    std::cout << "\t" << error_msg << std::endl << std::endl;
+}
 
-    image = std::make_shared<Image>(x, y, (20*text_size*string.size()),20*text_size);
-    render_text();
+TextBox::TextBox(int x, int y, int text_size, Color text_color, const char* text_string){
+    
+    if(text_string==nullptr){
+        console_warning("TextBox::TextBox()", "Null string provided");
+        return;
+    }
+    
+    else if(text_size<1){
+        console_warning("Textbox::Textbox()", "Text size is less than 1. Please enter a size of 1 or larger");
+        return;
+    }
+
+    else{
+        this->string = text_string;
+        this->text_size = text_size;
+        this->color = text_color;
+        this->stride = 20*text_size;
+        this->place = 0;
+        image = std::make_shared<Image>(x, y, (20*text_size*string.size()),20*text_size);
+        render_text();
+    }
 }
 
 void TextBox::render_text(){
@@ -242,8 +426,7 @@ void TextBox::render_text(){
         if(valid_character){
             image->add_image(place,0,tmp);
             this->place = this->place + this->stride;
-        }
-        
+        }        
     }
 }
 
@@ -540,3 +723,11 @@ Image TextBox::render_letter(char c, bool* valid_character){
     
 }
 
+void TextBox::set_color(Color color){   
+    image->set_color_all(color);
+}
+
+void TextBox::console_warning(const char* function, const char* error_msg){
+    std::cout << "WARNING: Error in " << function << "." << std::endl;
+    std::cout << "\t" << error_msg << std::endl << std::endl;
+}
