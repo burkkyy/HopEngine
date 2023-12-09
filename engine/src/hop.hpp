@@ -1,11 +1,12 @@
 
 /**
  * @file hop.cpp
- * @author Caleb Burke
- * @date Nov 5, 2023
+ * @author Glen Beatty
+ * @date December 8th, 2023
  *
- * Main header file users of library will use.
- * Other helper functions and constants defined here.
+ * Central header file necessary to include and use Hop Engine. 
+ * All user-accessible classes and functions are declared in this file. 
+ * Please refer to definitions.hpp to see constants.  
  *
  */
 
@@ -47,34 +48,36 @@ class Game{
     bool set_window_size(int width, int height);
     void set_fullscreen();
     void set_windowed();
-    void run();
     int get_resolution_width();
     int get_resolution_height();
+    void run();
+    void update();
+    bool is_running();
+    void stop();
     Rectangle create_rectangle(int x, int y, int width, int height, Color color);
     Circle create_circle(int x, int y, int radius, Color color);
     Triangle create_triangle(int v1x, int v1y, int v2x, int v2y, int v3x, int v3y, Color color);
     Sound create_sound(const char* file_name, bool loop_sound);
-    bool is_running();
-    void update();
     bool monitor_key(int key_code);
-    static std::vector<int> keys_pressed;
-    static std::vector<int> keys_held;
-    static std::vector<int> keys_monitored;
     bool key_pressed(int key);
     bool key_held(int key);
     bool key_released(int key);
-    void stop();
     std::vector<int> get_pressed_keys();
     std::vector<int> get_held_keys();
     std::vector<int> get_released_keys();
+
     private:
     AudioEngine audio_engine;
     std::shared_ptr<Engine> graphics_engine;
     std::shared_ptr<Keyboard> keyboard;
     bool engine_stopped = false;
     bool fullscreen = false;
-
-    
+    void console_warning(const char* function, const char* error_msg);
+    std::vector<int> valid_keys;
+    void initialize_valid_keys();
+    static std::vector<int> keys_pressed;
+    static std::vector<int> keys_held;
+    static std::vector<int> keys_monitored;
 };
 
 class Image{
@@ -94,7 +97,6 @@ class Image{
     int get_y();
     int get_height();
     int get_width();
-    std::vector<GameObject> game_objects;
 
     private:
     int x;
@@ -103,6 +105,9 @@ class Image{
     int height;
     std::vector<Image> images;
     inline static Game* game;
+    void console_warning(const char* function, const char* error_msg);
+    std::vector<GameObject> game_objects;
+
 };
 
 
@@ -111,6 +116,7 @@ class TextBox{
     public:
     
     TextBox(int x, int y, int text_size, Color text_color, const char* text_string);
+    void set_color(Color color);
 
     private:
     int text_size;
@@ -121,6 +127,8 @@ class TextBox{
     std::shared_ptr<Image> image; 
     void render_text();
     Image render_letter(char c, bool* valid_character);
+    void console_warning(const char* function, const char* error_msg);
+
 };
 }
 #endif 
