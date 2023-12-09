@@ -10,6 +10,7 @@ As a C++ game-engine library, Hop allows user-programmers to handle graphics, so
 
 ## Data Types
 In addition to the classes and functions which are documented in the following section, Hop Engine defines several data types which are not declared in the user-accessbile API declared in *hop.hpp* but are still necessary to make full use of Hop Engine. Those data types are described below.
+
 #### Colour(float red, float green, float blue)
 **Description:** Color is internally a 3-component vector as defined by the OpenGL Mathematics (GLM) library our engine uses to store vector data and perform linear algebra related operations. A Colour is really just a set of 3 floats with values ranging between 0.0 and 1.0. While it is possible to assign values outside of this range, they will behave as if they were the minimum and maximum valid values, 0.0 and 1.0 respectively. A Colour can be created in a project file using the following code:
 > hop::Color my_colour(0.0,1.0,0.0);
@@ -21,6 +22,7 @@ The previous line of code will create 200 pixels wide x 200 pixels high rectangl
 
 Lastly, there are a number of colours that are defined as static values. In place of a colour defined by 3 separate floats, the user can use several constants which are defined at the beginning of the *hop.hpp* header file. For example, to create the rectangle described above with a solid blue colour, the user can enter the following code.
 > Rectangle my_rectangle(0,0,200,200,hop::BLUE);
+
 #### GameObject Class
 **Description:** The GameObject class is the parent class for the basic geometric objects, Rectangle, Triangle, and Circle. Each of these geometric shape classes inherits two important methods from the GameObject class which are not defined within hop.hpp. Those methods are shown here.
 

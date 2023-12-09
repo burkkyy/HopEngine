@@ -78,13 +78,11 @@ Here we will describe each component in greater detail, including the component'
 
 #### Input 
 
-- **Purpose:** The input component of Hop Engine is responsible for accepting mouse and keyboard input from the player and providing it to the user-programmer.
+- **Purpose:** The input component of Hop Engine is responsible for accepting keyboard input from the player and providing it to the user-programmer.
 
-- **Interfaces and Services:** Mouse and keyboard input is first accepted from the player. It is then made available to the user-programmer via the Hop Engine API. The following key information is retrieved from the player and provided to the user-programmer for use in game logic.
+- **Interfaces and Services:** Keyboard input is first accepted from the player. It is then made available to the user-programmer via the Hop Engine API. The following key information is retrieved from the player and provided to the user-programmer for use in game logic.
 
     - **Keyboard:** Which keys have been activated and in what manner? Any key can be pressed, released, or held down continuously. These key states are provided to the user so they can implement desired behaviour based on the state of a single key or combination of keys. 
-
-    - **Mouse:** Where is the mouse cursor within the game window? Have any mouse buttons been clicked? This information is provided to the user so they can implement game logic if the mouse is hovering at a particular place or if any mouse button is clicked. These two pieces of information can be combined to determine if a space on the screen has been clicked on, enabling button-like functionality.
 
 #### Window & Context Generation 
 
@@ -137,6 +135,7 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 ├── buildenv
 │   └── Dockerfile
 ├── doc
+│   ├── UserManual.md
 │   ├── build.md
 │   ├── design.md
 │   ├── diagrams
@@ -148,23 +147,40 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │   │   ├── project_updates_phase1.md
 │   │   ├── project_updates_phase3.md
 │   │   ├── project_updates_phase4.md
-│   │   └── project_updates_phase5.md
+│   │   ├── project_updates_phase5.md
+│   │   └── project_updates_phase6.md
 │   ├── specifications.md
 │   ├── standards.md
 │   └── version_control.md
 ├── engine
 │   ├── Makefile
+│   ├── build
+│   │   ├── lib
+│   │   │   └── libHopHopEngine.a
+│   │   └── shaders
+│   │       ├── shader.frag.spv
+│   │       └── shader.vert.spv
 │   ├── config.mk
+│   ├── ext_lib
+│   │   ├── GLFW
+│   │   ├── glm
+│   │   └── miniaudio
+│   │       └── miniaudio.h
 │   ├── shaders
 │   │   ├── shader.frag
 │   │   └── shader.vert
 │   └── src
+│       ├── Audio
+│       │   ├── audio.cpp
+│       │   └── audio.hpp
 │       ├── Device
 │       │   ├── device.cpp
 │       │   └── device.hpp
 │       ├── Engine
 │       │   ├── engine.cpp
 │       │   └── engine.hpp
+│       ├── Hop
+│       │   └── hop.cpp
 │       ├── Input
 │       │   ├── input.cpp
 │       │   └── input.hpp
@@ -175,6 +191,8 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       │   ├── pipeline.cpp
 │       │   └── pipeline.hpp
 │       ├── Render_Systems
+│       │   ├── image_render_system.cpp
+│       │   ├── image_render_system.hpp
 │       │   ├── object_render_system.cpp
 │       │   └── object_render_system.hpp
 │       ├── Renderer
@@ -188,14 +206,17 @@ The file directory of the Hop Engine is shown below in it's entirety. The files 
 │       ├── Window
 │       │   ├── window.cpp
 │       │   └── window.hpp
+│       ├── definitions.hpp
 │       └── hop.hpp
-└── example
-    ├── moving_shapes
+└── projects
+    ├── final_demo
     │   ├── Makefile
-    │   └── app.cpp
-    └── simple_shapes
+    │   ├── app.cpp
+    │   └── sounds
+    └── pong
         ├── Makefile
-        └── app.cpp
+        ├── app.cpp
+        └── sounds
 
 ```
 
@@ -576,14 +597,14 @@ The `Window` directory will contain `window.cpp` and `window.hpp`
 Class `Window` will contain the following publicly callable functions:
 
 > ```cpp
-> 	Window(int w, int h)
+> 	Window(int width, int height)
 > ```
 > 
 > _Constructor for the `Window` class_
 > 
 > Parameters
-> - `w` The width of the screen
-> - `h` the height of the screen
+> - `width` The width of the screen
+> - `height` the height of the screen
 > 
 
 $~$
